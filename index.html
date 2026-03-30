@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StartJobReady — Build Your Resume</title>
+<title>ResumeBuilder — Build Your Resume</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -34,7 +34,6 @@ body {
   flex-direction: column;
 }
 
-/* ── Header ── */
 .header {
   background: var(--card);
   border-bottom: 1px solid var(--border);
@@ -68,7 +67,6 @@ body {
   outline: none;
 }
 
-/* ── Progress ── */
 .progress-wrap {
   background: var(--card);
   border-bottom: 1px solid var(--border);
@@ -95,7 +93,6 @@ body {
   transition: width 0.4s ease;
 }
 
-/* ── Main ── */
 main {
   flex: 1;
   display: flex;
@@ -109,7 +106,6 @@ main {
   max-width: 540px;
 }
 
-/* ── Step card ── */
 .step-card {
   background: var(--card);
   border-radius: var(--radius);
@@ -155,7 +151,6 @@ main {
   line-height: 1.5;
 }
 
-/* ── Input ── */
 .field {
   width: 100%;
   border: 1.5px solid var(--border);
@@ -179,7 +174,6 @@ main {
 }
 .field-error.show { display: block; }
 
-/* ── Options grid ── */
 .opts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -205,7 +199,6 @@ main {
 .opt-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 .opt-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
 
-/* ── Multi-select done btn ── */
 .multi-done {
   margin-top: 14px;
   width: 100%;
@@ -224,7 +217,6 @@ main {
 .multi-done:hover { background: var(--accent-dark); }
 .multi-done.show { display: block; }
 
-/* ── Nav buttons ── */
 .nav {
   display: flex;
   gap: 10px;
@@ -260,7 +252,6 @@ main {
 .btn-next:hover { background: var(--accent-dark); }
 .btn-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
-/* ── Review card ── */
 .review-section { margin-bottom: 20px; }
 .review-section-title {
   font-size: 11px;
@@ -290,7 +281,6 @@ main {
 .review-val { flex: 1; font-size: 14px; font-weight: 500; line-height: 1.4; }
 .review-edit { font-size: 12px; color: var(--accent); font-weight: 500; flex-shrink: 0; }
 
-/* ── Submit btn ── */
 .btn-submit {
   width: 100%;
   background: var(--success);
@@ -308,7 +298,6 @@ main {
 .btn-submit:hover { background: #15803d; }
 .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
-/* ── Success screen ── */
 .success-screen {
   text-align: center;
   padding: 20px 0;
@@ -330,7 +319,6 @@ main {
   line-height: 1.6;
 }
 
-/* ── Loading overlay ── */
 .loading {
   display: none;
   position: fixed;
@@ -366,15 +354,13 @@ main {
 <div class="header">
   <div class="logo">
     <div class="logo-icon">📋</div>
-    <div class="logo-name">StartJobReady</div>
+    <div class="logo-name">ResumeBuilder</div>
   </div>
-  <select class="lang-select" id="langSel" onchange="changeLang(this.value)">
+  <select class="lang-select" id="langSel">
     <option value="en">🇬🇧 English</option>
     <option value="zh">🇨🇳 中文</option>
     <option value="ms">🇲🇾 Melayu</option>
     <option value="ta">🇮🇳 தமிழ்</option>
-    <option value="hi">🇮🇳 हिन्दी</option>
-    <option value="bn">🇧🇩 বাংলা</option>
   </select>
 </div>
 
@@ -396,357 +382,523 @@ main {
 </div>
 
 <script>
-// ── Translations ──────────────────────────────────────────────────────────────
-const TR = {
+// ============================================================
+// STEP DEFINITIONS (language-independent)
+// ============================================================
+const STEPS = [
+  { key: "agency",      type: "text",   validate: null,     optional: false },
+  { key: "name",        type: "text",   validate: null,     optional: false },
+  { key: "dob",         type: "text",   validate: "dob",    optional: false },
+  { key: "nationality", type: "text",   validate: null,     optional: false },
+  { key: "country",     type: "text",   validate: null,     optional: false },
+  { key: "city",        type: "text",   validate: null,     optional: false },
+  { key: "phone",       type: "text",   validate: "phone",  optional: false },
+  { key: "email",       type: "text",   validate: "email",  optional: false },
+  { key: "jobType",     type: "multi",  optional: false },
+  { key: "workArrange", type: "opts",   optional: false },
+  { key: "availability",type: "opts",   optional: false },
+  { key: "salary",      type: "text",   validate: "salary", optional: true },
+  { key: "experience",  type: "opts",   optional: false },
+  { key: "job1Title",   type: "text",   validate: null,     optional: false },
+  { key: "job1Company", type: "text",   validate: null,     optional: false },
+  { key: "job1Dates",   type: "text",   validate: "daterange", optional: false },
+  { key: "job2Title",   type: "text",   validate: null,     optional: true },
+  { key: "job2Company", type: "text",   validate: null,     optional: true },
+  { key: "job2Dates",   type: "text",   validate: "daterange", optional: true },
+  { key: "job3Title",   type: "text",   validate: null,     optional: true },
+  { key: "job3Company", type: "text",   validate: null,     optional: true },
+  { key: "job3Dates",   type: "text",   validate: "daterange", optional: true },
+  { key: "skills",      type: "text",   validate: null,     optional: false },
+  { key: "certs",       type: "text",   validate: null,     optional: true },
+  { key: "education",   type: "opts",   optional: false },
+  { key: "languages",   type: "multi",  optional: false },
+];
+
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const CONTENT = {
   en: {
-    stepOf: (a,b) => `Step ${a} of ${b}`,
-    back: "← Back", next: "Continue →", submit: "Submit Resume ✓",
+    back: "← Back",
+    next: "Continue →",
+    submit: "Submit Resume ✓",
     submitting: "Submitting your resume...",
     editHint: "Tap any field to edit it",
     reviewTitle: "Review Your Resume",
     reviewHint: "Check everything carefully before submitting.",
     naBtn: "Not applicable / Skip",
     doneBtn: "Done — next step →",
-    successTitle: (name) => `Thank you, ${name}! 🎉`,
-    successMsg: (agency) => `Your resume has been successfully submitted to ${agency}. They will review your details and contact you if there is a suitable position.\n\nGood luck! 🙏`,
-    errRequired: "This field is required.",
-    errDob: "Please enter a valid date. Example: 15 Jan 1990",
-    errPhone: "Please enter a valid phone number with country code.",
-    errEmail: "Please enter a valid email address.",
-    errSalary: "Please enter a number, e.g. 1800",
-    errDate: "Please enter dates, e.g. Jan 2022 – Mar 2024",
     steps: [
-      { k:"agency",      ic:"🏬", label:"Agency",      q:"Which manpower agency is this resume for?",                      hint:"Type the agency name exactly as given to you.",                              type:"text",  ph:"e.g. Worklink Manpower Pte Ltd" },
-      { k:"name",        ic:"👤", label:"Full name",    q:"What is your full name?",                                        hint:"Enter your full legal name.",                                               type:"text",  ph:"e.g. Ahmad bin Ramli" },
-      { k:"dob",         ic:"🎂", label:"Date of birth",q:"What is your date of birth?",                                   hint:"Example: 15 Jan 1990 or 15/01/1990",                                        type:"text",  ph:"e.g. 15 Jan 1990", validate:"dob" },
-      { k:"nationality", ic:"🌏", label:"Nationality",  q:"What is your nationality?",                                     hint:"Example: Malaysian, Indian, Bangladeshi, Filipino",                         type:"text",  ph:"e.g. Malaysian" },
-      { k:"country",     ic:"📍", label:"Country",      q:"Which country are you currently living in?",                    hint:"",                                                                          type:"text",  ph:"e.g. Malaysia" },
-      { k:"city",        ic:"🏙", label:"City",         q:"Which city or town are you in?",                                hint:"",                                                                          type:"text",  ph:"e.g. Kuala Lumpur" },
-      { k:"phone",       ic:"📞", label:"Phone",        q:"What is your phone number?",                                    hint:"Include your country code. Example: +60 12-345 6789",                       type:"text",  ph:"e.g. +60 12-345 6789", validate:"phone" },
-      { k:"email",       ic:"📧", label:"Email",        q:"What is your email address?",                                   hint:"Example: ahmad@gmail.com",                                                  type:"text",  ph:"e.g. ahmad@gmail.com", validate:"email" },
-      { k:"jobType",     ic:"💼", label:"Job type",     q:"What type of work are you looking for in Singapore?",           hint:"Select all that apply.",                                                     type:"multi", opts:["Construction","Cleaning","Delivery / Logistics","Security","Warehouse","F&B / Kitchen","Manufacturing","Other"] },
-      { k:"workArrange", ic:"🕐", label:"Arrangement",  q:"What type of work arrangement are you open to?",               hint:"",                                                                          type:"opts",  opts:["Full-time","Part-time","Shift work"] },
-      { k:"availability",ic:"📅", label:"Availability", q:"When can you start work in Singapore?",                        hint:"",                                                                          type:"opts",  opts:["Immediately","Within 1 week","Within 1 month"] },
-      { k:"salary",      ic:"💰", label:"Salary (SGD)", q:"What is your expected monthly salary in Singapore?",           hint:"In Singapore Dollars. Leave blank if flexible.",                            type:"text",  ph:"e.g. 1800", optional:true, validate:"salary" },
-      { k:"experience",  ic:"📊", label:"Experience",   q:"How many years of experience do you have?",                    hint:"In this type of work.",                                                     type:"opts",  opts:["No experience","< 1 year","1–3 years","3–5 years","5–10 years","10+ years"] },
-      { k:"job1Title",   ic:"🏢", label:"Job 1 title",  q:"What was your most recent job title?",                         hint:"Example: Construction Worker, Security Guard, Cleaner",                     type:"text",  ph:"e.g. Construction Worker" },
-      { k:"job1Company", ic:"🏢", label:"Job 1 company",q:"Which company did you work at?",                               hint:"",                                                                          type:"text",  ph:"e.g. Lim Construction Pte Ltd" },
-      { k:"job1Dates",   ic:"🏢", label:"Job 1 dates",  q:"When did you work there?",                                    hint:"Example: Jan 2022 – Mar 2024",                                              type:"text",  ph:"e.g. Jan 2022 – Mar 2024", validate:"daterange" },
-      { k:"job2Title",   ic:"🏢", label:"Job 2 title",  q:"What was your 2nd most recent job title?",                    hint:"Leave blank if you only have one job.",                                     type:"text",  ph:"e.g. Warehouse Worker", optional:true },
-      { k:"job2Company", ic:"🏢", label:"Job 2 company",q:"Which company was that?",                                      hint:"",                                                                          type:"text",  ph:"e.g. ABC Logistics", optional:true },
-      { k:"job2Dates",   ic:"🏢", label:"Job 2 dates",  q:"When did you work there?",                                    hint:"Example: Mar 2020 – Dec 2021",                                             type:"text",  ph:"e.g. Mar 2020 – Dec 2021", optional:true, validate:"daterange" },
-      { k:"job3Title",   ic:"🏢", label:"Job 3 title",  q:"What was your 3rd most recent job title?",                    hint:"Leave blank if you only have two jobs.",                                    type:"text",  ph:"e.g. Cleaner", optional:true },
-      { k:"job3Company", ic:"🏢", label:"Job 3 company",q:"Which company was that?",                                      hint:"",                                                                          type:"text",  ph:"e.g. XYZ Services", optional:true },
-      { k:"job3Dates",   ic:"🏢", label:"Job 3 dates",  q:"When did you work there?",                                    hint:"Example: Jan 2018 – Feb 2020",                                             type:"text",  ph:"e.g. Jan 2018 – Feb 2020", optional:true, validate:"daterange" },
-      { k:"skills",      ic:"🔧", label:"Skills",       q:"What skills and tools do you know?",                           hint:"Example: Forklift, scaffolding, welding, cleaning equipment, driving",       type:"text",  ph:"e.g. Forklift, scaffolding, welding" },
-      { k:"certs",       ic:"📜", label:"Certifications",q:"Do you have any certifications or licences?",                 hint:"Example: Forklift licence, BCSS, Food Hygiene cert, Security licence",      type:"text",  ph:"e.g. Forklift licence, BCSS", optional:true },
-      { k:"education",   ic:"🎓", label:"Education",    q:"What is your highest education level?",                        hint:"",                                                                          type:"opts",  opts:["No formal education","Primary school","Secondary school","Vocational / ITE","Diploma","Degree or higher"] },
-      { k:"languages",   ic:"🗣", label:"Languages",    q:"Which languages can you speak or read?",                       hint:"Select all that apply.",                                                    type:"multi", opts:["English","Mandarin","Malay","Tamil","Hindi","Bengali"] },
+      { icon: "🏬", label: "Agency", question: "Which manpower agency is this resume for?", hint: "Type the agency name exactly as given to you.", placeholder: "e.g. Worklink Manpower Pte Ltd" },
+      { icon: "👤", label: "Full name", question: "What is your full name?", hint: "Enter your full legal name.", placeholder: "e.g. Ahmad bin Ramli" },
+      { icon: "🎂", label: "Date of birth", question: "What is your date of birth?", hint: "Example: 15 Jan 1990 or 15/01/1990", placeholder: "e.g. 15 Jan 1990" },
+      { icon: "🌏", label: "Nationality", question: "What is your nationality?", hint: "Example: Malaysian, Indian, Bangladeshi, Filipino", placeholder: "e.g. Malaysian" },
+      { icon: "📍", label: "Country", question: "Which country are you currently living in?", hint: "", placeholder: "e.g. Malaysia" },
+      { icon: "🏙", label: "City", question: "Which city or town are you in?", hint: "", placeholder: "e.g. Kuala Lumpur" },
+      { icon: "📞", label: "Phone", question: "What is your phone number?", hint: "Include your country code. Example: +60 12-345 6789", placeholder: "e.g. +60 12-345 6789" },
+      { icon: "📧", label: "Email", question: "What is your email address?", hint: "Example: ahmad@gmail.com", placeholder: "e.g. ahmad@gmail.com" },
+      { icon: "💼", label: "Job type", question: "What type of work are you looking for in Singapore?", hint: "Select all that apply.", options: ["Construction","Cleaning","Delivery / Logistics","Security","Warehouse","F&B / Kitchen","Manufacturing","Other"] },
+      { icon: "🕐", label: "Arrangement", question: "What type of work arrangement are you open to?", hint: "", options: ["Full-time","Part-time","Shift work"] },
+      { icon: "📅", label: "Availability", question: "When can you start work in Singapore?", hint: "", options: ["Immediately","Within 1 week","Within 1 month"] },
+      { icon: "💰", label: "Salary (SGD)", question: "What is your expected monthly salary in Singapore?", hint: "In Singapore Dollars. Leave blank if flexible.", placeholder: "e.g. 1800" },
+      { icon: "📊", label: "Experience", question: "How many years of experience do you have?", hint: "In this type of work.", options: ["No experience","< 1 year","1–3 years","3–5 years","5–10 years","10+ years"] },
+      { icon: "🏢", label: "Job 1 title", question: "What was your most recent job title?", hint: "Example: Construction Worker, Security Guard, Cleaner", placeholder: "e.g. Construction Worker" },
+      { icon: "🏢", label: "Job 1 company", question: "Which company did you work at?", hint: "", placeholder: "e.g. Lim Construction Pte Ltd" },
+      { icon: "🏢", label: "Job 1 dates", question: "When did you work there?", hint: "Example: Jan 2022 – Mar 2024", placeholder: "e.g. Jan 2022 – Mar 2024" },
+      { icon: "🏢", label: "Job 2 title", question: "What was your 2nd most recent job title?", hint: "Leave blank if you only have one job.", placeholder: "e.g. Warehouse Worker" },
+      { icon: "🏢", label: "Job 2 company", question: "Which company was that?", hint: "", placeholder: "e.g. ABC Logistics" },
+      { icon: "🏢", label: "Job 2 dates", question: "When did you work there?", hint: "Example: Mar 2020 – Dec 2021", placeholder: "e.g. Mar 2020 – Dec 2021" },
+      { icon: "🏢", label: "Job 3 title", question: "What was your 3rd most recent job title?", hint: "Leave blank if you only have two jobs.", placeholder: "e.g. Cleaner" },
+      { icon: "🏢", label: "Job 3 company", question: "Which company was that?", hint: "", placeholder: "e.g. XYZ Services" },
+      { icon: "🏢", label: "Job 3 dates", question: "When did you work there?", hint: "Example: Jan 2018 – Feb 2020", placeholder: "e.g. Jan 2018 – Feb 2020" },
+      { icon: "🔧", label: "Skills", question: "What skills and tools do you know?", hint: "Example: Forklift, scaffolding, welding, cleaning equipment, driving", placeholder: "e.g. Forklift, scaffolding, welding" },
+      { icon: "📜", label: "Certifications", question: "Do you have any certifications or licences?", hint: "Example: Forklift licence, BCSS, Food Hygiene cert, Security licence", placeholder: "e.g. Forklift licence, BCSS" },
+      { icon: "🎓", label: "Education", question: "What is your highest education level?", hint: "", options: ["No formal education","Primary school","Secondary school","Vocational / ITE","Diploma","Degree or higher"] },
+      { icon: "🗣", label: "Languages", question: "Which languages can you speak or read?", hint: "Select all that apply.", options: ["English","Mandarin","Malay","Tamil","Hindi","Bengali"] },
     ],
     reviewSections: {
       personal: "Personal Details",
       job: "Job Preferences",
       experience: "Work Experience",
       skills: "Skills & Education",
-    }
+    },
+    errors: {
+      required: "This field is required.",
+      dob: "Please enter a valid date. Example: 15 Jan 1990",
+      phone: "Please enter a valid phone number with country code.",
+      email: "Please enter a valid email address.",
+      salary: "Please enter a number, e.g. 1800",
+      daterange: "Please enter dates, e.g. Jan 2022 – Mar 2024",
+    },
+    successTitle: (name) => `Thank you, ${name}! 🎉`,
+    successMsg: (agency) => `Your resume has been successfully submitted to ${agency}. They will review your details and contact you if there is a suitable position.\n\nGood luck! 🙏`,
   },
-  // Other languages use English steps with translated UI strings only
   zh: {
-    stepOf: (a,b) => `第 ${a} 步，共 ${b} 步`,
-    back:"← 返回", next:"继续 →", submit:"提交简历 ✓",
-    submitting:"正在提交您的简历...",
-    editHint:"点击任意字段进行编辑",
-    reviewTitle:"核对您的简历",
-    reviewHint:"提交前请仔细检查所有信息。",
-    naBtn:"不适用 / 跳过", doneBtn:"完成 — 下一步 →",
-    successTitle:(name)=>`谢谢您，${name}！🎉`,
-    successMsg:(agency)=>`您的简历已成功提交至 ${agency}。他们将审核您的资料，如有合适职位将与您联系。\n\n祝您好运！🙏`,
-    errRequired:"此字段为必填项。", errDob:"请输入有效日期。示例：15 Jan 1990",
-    errPhone:"请输入包含国家代码的有效电话号码。", errEmail:"请输入有效的电子邮件地址。",
-    errSalary:"请输入数字，例如 1800", errDate:"请输入日期，例如 Jan 2022 – Mar 2024",
+    back: "← 返回",
+    next: "继续 →",
+    submit: "提交简历 ✓",
+    submitting: "正在提交您的简历...",
+    editHint: "点击任意字段进行编辑",
+    reviewTitle: "核对您的简历",
+    reviewHint: "提交前请仔细检查所有信息。",
+    naBtn: "不适用 / 跳过",
+    doneBtn: "完成 — 下一步 →",
+    steps: [
+      { icon: "🏬", label: "中介机构", question: "这份简历是为哪家人力中介准备的？", hint: "请准确输入中介名称。", placeholder: "例如：Worklink Manpower Pte Ltd" },
+      { icon: "👤", label: "全名", question: "您的全名是什么？", hint: "请输入您的法定全名。", placeholder: "例如：陈小明" },
+      { icon: "🎂", label: "出生日期", question: "您的出生日期是什么？", hint: "示例：1990年1月15日", placeholder: "例如：1990年1月15日" },
+      { icon: "🌏", label: "国籍", question: "您的国籍是什么？", hint: "示例：马来西亚、印度、孟加拉、菲律宾", placeholder: "例如：马来西亚" },
+      { icon: "📍", label: "国家", question: "您目前居住在哪个国家？", hint: "", placeholder: "例如：马来西亚" },
+      { icon: "🏙", label: "城市", question: "您在哪个城市或城镇？", hint: "", placeholder: "例如：吉隆坡" },
+      { icon: "📞", label: "电话", question: "您的电话号码是什么？", hint: "请包含国家代码。示例：+60 12-345 6789", placeholder: "例如：+60 12-345 6789" },
+      { icon: "📧", label: "电子邮件", question: "您的电子邮件地址是什么？", hint: "示例：xiaoming@gmail.com", placeholder: "例如：xiaoming@gmail.com" },
+      { icon: "💼", label: "工作类型", question: "您在新加坡寻找什么类型的工作？", hint: "可选择多项。", options: ["建筑","清洁","物流/配送","保安","仓库","餐饮/厨房","制造业","其他"] },
+      { icon: "🕐", label: "工作安排", question: "您接受哪种工作安排？", hint: "", options: ["全职","兼职","轮班"] },
+      { icon: "📅", label: "可开始时间", question: "您何时可以开始在新加坡工作？", hint: "", options: ["立即","1周内","1个月内"] },
+      { icon: "💰", label: "期望薪资 (新币)", question: "您在新加坡的期望月薪是多少？", hint: "新加坡元。如灵活可留空。", placeholder: "例如：1800" },
+      { icon: "📊", label: "工作经验", question: "您有多少年工作经验？", hint: "在此类工作中。", options: ["无经验","少于1年","1-3年","3-5年","5-10年","10年以上"] },
+      { icon: "🏢", label: "最近职位", question: "您最近的工作职位是什么？", hint: "示例：建筑工人、保安、清洁工", placeholder: "例如：建筑工人" },
+      { icon: "🏢", label: "公司名称", question: "您在哪家公司工作？", hint: "", placeholder: "例如：Lim Construction Pte Ltd" },
+      { icon: "🏢", label: "在职时间", question: "您在那里的工作时间？", hint: "示例：2022年1月 – 2024年3月", placeholder: "例如：2022年1月 – 2024年3月" },
+      { icon: "🏢", label: "第二职位", question: "您的第二份工作职位是什么？", hint: "如只有一份工作请留空。", placeholder: "例如：仓库工人" },
+      { icon: "🏢", label: "第二公司", question: "那家公司是？", hint: "", placeholder: "例如：ABC Logistics" },
+      { icon: "🏢", label: "第二在职时间", question: "您在那里的工作时间？", hint: "示例：2020年3月 – 2021年12月", placeholder: "例如：2020年3月 – 2021年12月" },
+      { icon: "🏢", label: "第三职位", question: "您的第三份工作职位是什么？", hint: "如只有两份工作请留空。", placeholder: "例如：清洁工" },
+      { icon: "🏢", label: "第三公司", question: "那家公司是？", hint: "", placeholder: "例如：XYZ Services" },
+      { icon: "🏢", label: "第三在职时间", question: "您在那里的工作时间？", hint: "示例：2018年1月 – 2020年2月", placeholder: "例如：2018年1月 – 2020年2月" },
+      { icon: "🔧", label: "技能", question: "您掌握哪些技能和工具？", hint: "示例：叉车、脚手架、焊接、清洁设备、驾驶", placeholder: "例如：叉车、脚手架、焊接" },
+      { icon: "📜", label: "证书", question: "您有哪些证书或执照？", hint: "示例：叉车执照、BCSS、食品卫生证书、保安执照", placeholder: "例如：叉车执照、BCSS" },
+      { icon: "🎓", label: "教育程度", question: "您的最高教育程度是什么？", hint: "", options: ["无正式教育","小学","中学","职业/ITE","文凭","学位或以上"] },
+      { icon: "🗣", label: "语言", question: "您能说或读哪些语言？", hint: "可选择多项。", options: ["英语","华语","马来语","泰米尔语","印地语","孟加拉语"] },
+    ],
+    reviewSections: {
+      personal: "个人信息",
+      job: "工作偏好",
+      experience: "工作经验",
+      skills: "技能与教育",
+    },
+    errors: {
+      required: "此字段为必填项。",
+      dob: "请输入有效日期。示例：1990年1月15日",
+      phone: "请输入包含国家代码的有效电话号码。",
+      email: "请输入有效的电子邮件地址。",
+      salary: "请输入数字，例如 1800",
+      daterange: "请输入日期，例如 2022年1月 – 2024年3月",
+    },
+    successTitle: (name) => `谢谢您，${name}！🎉`,
+    successMsg: (agency) => `您的简历已成功提交至 ${agency}。他们将审核您的资料，如有合适职位将与您联系。\n\n祝您好运！🙏`,
   },
   ms: {
-    stepOf:(a,b)=>`Langkah ${a} daripada ${b}`,
-    back:"← Kembali", next:"Teruskan →", submit:"Hantar Resume ✓",
-    submitting:"Menghantar resume anda...",
-    editHint:"Ketik mana-mana medan untuk mengedit",
-    reviewTitle:"Semak Resume Anda",
-    reviewHint:"Semak semua maklumat dengan teliti sebelum menghantar.",
-    naBtn:"Tidak berkenaan / Langkau", doneBtn:"Selesai — langkah seterusnya →",
-    successTitle:(name)=>`Terima kasih, ${name}! 🎉`,
-    successMsg:(agency)=>`Resume anda telah berjaya dihantar ke ${agency}. Mereka akan menyemak maklumat anda dan menghubungi anda jika ada jawatan yang sesuai.\n\nSemoga berjaya! 🙏`,
-    errRequired:"Medan ini diperlukan.", errDob:"Sila masukkan tarikh yang sah. Contoh: 15 Jan 1990",
-    errPhone:"Sila masukkan nombor telefon dengan kod negara.", errEmail:"Sila masukkan alamat e-mel yang sah.",
-    errSalary:"Sila masukkan nombor, cth. 1800", errDate:"Sila masukkan tarikh, cth. Jan 2022 – Mac 2024",
+    back: "← Kembali",
+    next: "Teruskan →",
+    submit: "Hantar Resume ✓",
+    submitting: "Menghantar resume anda...",
+    editHint: "Ketik mana-mana medan untuk mengedit",
+    reviewTitle: "Semak Resume Anda",
+    reviewHint: "Semak semua maklumat dengan teliti sebelum menghantar.",
+    naBtn: "Tidak berkenaan / Langkau",
+    doneBtn: "Selesai — langkah seterusnya →",
+    steps: [
+      { icon: "🏬", label: "Agensi", question: "Resume ini untuk agensi pekerja mana?", hint: "Taip nama agensi tepat seperti yang diberikan.", placeholder: "cth. Worklink Manpower Pte Ltd" },
+      { icon: "👤", label: "Nama penuh", question: "Apakah nama penuh anda?", hint: "Masukkan nama penuh sah anda.", placeholder: "cth. Ahmad bin Ramli" },
+      { icon: "🎂", label: "Tarikh lahir", question: "Apakah tarikh lahir anda?", hint: "Contoh: 15 Jan 1990 atau 15/01/1990", placeholder: "cth. 15 Jan 1990" },
+      { icon: "🌏", label: "Kewarganegaraan", question: "Apakah kewarganegaraan anda?", hint: "Contoh: Malaysia, India, Bangladesh, Filipina", placeholder: "cth. Malaysia" },
+      { icon: "📍", label: "Negara", question: "Di negara manakah anda tinggal sekarang?", hint: "", placeholder: "cth. Malaysia" },
+      { icon: "🏙", label: "Bandar", question: "Di bandar atau pekan manakah anda berada?", hint: "", placeholder: "cth. Kuala Lumpur" },
+      { icon: "📞", label: "Telefon", question: "Apakah nombor telefon anda?", hint: "Sertakan kod negara. Contoh: +60 12-345 6789", placeholder: "cth. +60 12-345 6789" },
+      { icon: "📧", label: "Emel", question: "Apakah alamat emel anda?", hint: "Contoh: ahmad@gmail.com", placeholder: "cth. ahmad@gmail.com" },
+      { icon: "💼", label: "Jenis kerja", question: "Apakah jenis pekerjaan yang anda cari di Singapura?", hint: "Pilih semua yang berkenaan.", options: ["Pembinaan","Pembersihan","Penghantaran / Logistik","Keselamatan","Gudang","Makanan & Minuman / Dapur","Pembuatan","Lain-lain"] },
+      { icon: "🕐", label: "Susunan kerja", question: "Apakah jenis susunan kerja yang anda bersedia?", hint: "", options: ["Sepenuh masa","Separuh masa","Kerja shift"] },
+      { icon: "📅", label: "Ketersediaan", question: "Bilakah anda boleh mula bekerja di Singapura?", hint: "", options: ["Segera","Dalam 1 minggu","Dalam 1 bulan"] },
+      { icon: "💰", label: "Gaji (SGD)", question: "Berapakah gaji bulanan yang anda harapkan di Singapura?", hint: "Dalam Dolar Singapura. Kosongkan jika fleksibel.", placeholder: "cth. 1800" },
+      { icon: "📊", label: "Pengalaman", question: "Berapa tahun pengalaman anda?", hint: "Dalam jenis pekerjaan ini.", options: ["Tiada pengalaman","< 1 tahun","1–3 tahun","3–5 tahun","5–10 tahun","10+ tahun"] },
+      { icon: "🏢", label: "Jawatan 1", question: "Apakah jawatan terbaru anda?", hint: "Contoh: Pekerja Binaan, Pengawal Keselamatan, Pembersih", placeholder: "cth. Pekerja Binaan" },
+      { icon: "🏢", label: "Syarikat 1", question: "Di syarikat manakah anda bekerja?", hint: "", placeholder: "cth. Lim Construction Pte Ltd" },
+      { icon: "🏢", label: "Tempoh 1", question: "Bilakah anda bekerja di sana?", hint: "Contoh: Jan 2022 – Mac 2024", placeholder: "cth. Jan 2022 – Mac 2024" },
+      { icon: "🏢", label: "Jawatan 2", question: "Apakah jawatan kedua terbaru anda?", hint: "Kosongkan jika hanya ada satu pekerjaan.", placeholder: "cth. Pekerja Gudang" },
+      { icon: "🏢", label: "Syarikat 2", question: "Syarikat manakah itu?", hint: "", placeholder: "cth. ABC Logistics" },
+      { icon: "🏢", label: "Tempoh 2", question: "Bilakah anda bekerja di sana?", hint: "Contoh: Mac 2020 – Dis 2021", placeholder: "cth. Mac 2020 – Dis 2021" },
+      { icon: "🏢", label: "Jawatan 3", question: "Apakah jawatan ketiga terbaru anda?", hint: "Kosongkan jika hanya ada dua pekerjaan.", placeholder: "cth. Pembersih" },
+      { icon: "🏢", label: "Syarikat 3", question: "Syarikat manakah itu?", hint: "", placeholder: "cth. XYZ Services" },
+      { icon: "🏢", label: "Tempoh 3", question: "Bilakah anda bekerja di sana?", hint: "Contoh: Jan 2018 – Feb 2020", placeholder: "cth. Jan 2018 – Feb 2020" },
+      { icon: "🔧", label: "Kemahiran", question: "Apakah kemahiran dan alatan yang anda tahu?", hint: "Contoh: Forklift, perancah, kimpalan, peralatan pembersihan, memandu", placeholder: "cth. Forklift, perancah, kimpalan" },
+      { icon: "📜", label: "Sijil", question: "Adakah anda mempunyai sebarang sijil atau lesen?", hint: "Contoh: Lesen Forklift, BCSS, Sijil Kebersihan Makanan, Lesen Keselamatan", placeholder: "cth. Lesen Forklift, BCSS" },
+      { icon: "🎓", label: "Pendidikan", question: "Apakah tahap pendidikan tertinggi anda?", hint: "", options: ["Tiada pendidikan formal","Sekolah rendah","Sekolah menengah","Vokasional / ITE","Diploma","Ijazah atau lebih tinggi"] },
+      { icon: "🗣", label: "Bahasa", question: "Bahasa manakah yang anda boleh cakap atau baca?", hint: "Pilih semua yang berkenaan.", options: ["Inggeris","Mandarin","Melayu","Tamil","Hindi","Bengali"] },
+    ],
+    reviewSections: {
+      personal: "Maklumat Peribadi",
+      job: "Pilihan Pekerjaan",
+      experience: "Pengalaman Kerja",
+      skills: "Kemahiran & Pendidikan",
+    },
+    errors: {
+      required: "Medan ini diperlukan.",
+      dob: "Sila masukkan tarikh yang sah. Contoh: 15 Jan 1990",
+      phone: "Sila masukkan nombor telefon dengan kod negara.",
+      email: "Sila masukkan alamat e-mel yang sah.",
+      salary: "Sila masukkan nombor, cth. 1800",
+      daterange: "Sila masukkan tarikh, cth. Jan 2022 – Mac 2024",
+    },
+    successTitle: (name) => `Terima kasih, ${name}! 🎉`,
+    successMsg: (agency) => `Resume anda telah berjaya dihantar ke ${agency}. Mereka akan menyemak maklumat anda dan menghubungi anda jika ada jawatan yang sesuai.\n\nSemoga berjaya! 🙏`,
   },
   ta: {
-    stepOf:(a,b)=>`படி ${a} / ${b}`,
-    back:"← திரும்பு", next:"தொடரவும் →", submit:"Resume சமர்ப்பி ✓",
-    submitting:"உங்கள் resume சமர்ப்பிக்கிறோம்...",
-    editHint:"திருத்த எந்த புலத்தையும் தட்டவும்",
-    reviewTitle:"உங்கள் Resume சரிபார்க்கவும்",
-    reviewHint:"சமர்ப்பிக்கும் முன் அனைத்தையும் கவனமாக சரிபார்க்கவும்.",
-    naBtn:"பொருந்தாது / தவிர்", doneBtn:"முடிந்தது — அடுத்த படி →",
-    successTitle:(name)=>`நன்றி, ${name}! 🎉`,
-    successMsg:(agency)=>`உங்கள் resume ${agency}-க்கு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.\n\nவாழ்த்துக்கள்! 🙏`,
-    errRequired:"இந்த புலம் தேவை.", errDob:"சரியான தேதியை உள்ளிடவும். எ.கா: 15 Jan 1990",
-    errPhone:"நாட்டு குறியீட்டுடன் சரியான எண் உள்ளிடவும்.", errEmail:"சரியான மின்னஞ்சல் உள்ளிடவும்.",
-    errSalary:"எண் உள்ளிடவும், எ.கா. 1800", errDate:"தேதி உள்ளிடவும், எ.கா. Jan 2022 – Mar 2024",
-  },
-  hi: {
-    stepOf:(a,b)=>`चरण ${a} / ${b}`,
-    back:"← वापस", next:"जारी रखें →", submit:"Resume जमा करें ✓",
-    submitting:"आपका resume जमा किया जा रहा है...",
-    editHint:"संपादित करने के लिए किसी भी फ़ील्ड पर टैप करें",
-    reviewTitle:"अपना Resume जांचें",
-    reviewHint:"जमा करने से पहले सब कुछ ध्यान से जांचें।",
-    naBtn:"लागू नहीं / छोड़ें", doneBtn:"पूर्ण — अगला चरण →",
-    successTitle:(name)=>`धन्यवाद, ${name}! 🎉`,
-    successMsg:(agency)=>`आपका resume सफलतापूर्वक ${agency} को जमा कर दिया गया है।\n\nशुभकामनाएं! 🙏`,
-    errRequired:"यह फ़ील्ड आवश्यक है।", errDob:"सही तारीख दर्ज करें। उदाहरण: 15 Jan 1990",
-    errPhone:"देश कोड के साथ सही नंबर दर्ज करें।", errEmail:"सही ईमेल दर्ज करें।",
-    errSalary:"संख्या दर्ज करें, जैसे 1800", errDate:"तारीख दर्ज करें, जैसे Jan 2022 – Mar 2024",
-  },
-  bn: {
-    stepOf:(a,b)=>`ধাপ ${a} / ${b}`,
-    back:"← ফিরে যান", next:"চালিয়ে যান →", submit:"Resume জমা দিন ✓",
-    submitting:"আপনার resume জমা দেওয়া হচ্ছে...",
-    editHint:"সম্পাদনা করতে যেকোনো ক্ষেত্রে ট্যাপ করুন",
-    reviewTitle:"আপনার Resume পর্যালোচনা করুন",
-    reviewHint:"জমা দেওয়ার আগে সব কিছু সাবধানে পরীক্ষা করুন।",
-    naBtn:"প্রযোজ্য নয় / এড়িয়ে যান", doneBtn:"সম্পন্ন — পরবর্তী ধাপ →",
-    successTitle:(name)=>`ধন্যবাদ, ${name}! 🎉`,
-    successMsg:(agency)=>`আপনার resume সফলভাবে ${agency}-এ জমা দেওয়া হয়েছে।\n\nশুভকামনা! 🙏`,
-    errRequired:"এই ক্ষেত্রটি প্রয়োজন।", errDob:"সঠিক তারিখ দিন। উদাহরণ: 15 Jan 1990",
-    errPhone:"দেশের কোড সহ সঠিক নম্বর দিন।", errEmail:"সঠিক ইমেইল দিন।",
-    errSalary:"সংখ্যা দিন, যেমন 1800", errDate:"তারিখ দিন, যেমন Jan 2022 – Mar 2024",
+    back: "← திரும்பு",
+    next: "தொடரவும் →",
+    submit: "ரெஸ்யூமை சமர்ப்பி ✓",
+    submitting: "உங்கள் ரெஸ்யூமை சமர்ப்பிக்கிறோம்...",
+    editHint: "திருத்த எந்த புலத்தையும் தட்டவும்",
+    reviewTitle: "உங்கள் ரெஸ்யூமை சரிபார்க்கவும்",
+    reviewHint: "சமர்ப்பிக்கும் முன் அனைத்தையும் கவனமாக சரிபார்க்கவும்.",
+    naBtn: "பொருந்தாது / தவிர்",
+    doneBtn: "முடிந்தது — அடுத்த படி →",
+    steps: [
+      { icon: "🏬", label: "முகமை", question: "இந்த ரெஸ்யூம் எந்த மனிதவள முகமைக்கானது?", hint: "முகமையின் பெயரை சரியாக உள்ளிடவும்.", placeholder: "எ.கா. வொர்க்லிங்க் மன்பவர் பி.டி. லிட்" },
+      { icon: "👤", label: "முழு பெயர்", question: "உங்கள் முழு பெயர் என்ன?", hint: "உங்கள் முழு சட்டப்பூர்வ பெயரை உள்ளிடவும்.", placeholder: "எ.கா. அஹ்மத் பின் ரம்லி" },
+      { icon: "🎂", label: "பிறந்த தேதி", question: "உங்கள் பிறந்த தேதி என்ன?", hint: "எடுத்துக்காட்டு: 15 ஜன 1990 அல்லது 15/01/1990", placeholder: "எ.கா. 15 ஜன 1990" },
+      { icon: "🌏", label: "குடியுரிமை", question: "உங்கள் குடியுரிமை என்ன?", hint: "எடுத்துக்காட்டு: மலேசியன், இந்தியன், பங்களாதேஷி, பிலிப்பினோ", placeholder: "எ.கா. மலேசியன்" },
+      { icon: "📍", label: "நாடு", question: "நீங்கள் தற்போது எந்த நாட்டில் வசிக்கிறீர்கள்?", hint: "", placeholder: "எ.கா. மலேசியா" },
+      { icon: "🏙", label: "நகரம்", question: "நீங்கள் எந்த நகரம் அல்லது பட்டணத்தில் உள்ளீர்கள்?", hint: "", placeholder: "எ.கா. கோலாலம்பூர்" },
+      { icon: "📞", label: "தொலைபேசி", question: "உங்கள் தொலைபேசி எண் என்ன?", hint: "உங்கள் நாட்டுக் குறியீட்டைச் சேர்க்கவும். எடுத்துக்காட்டு: +60 12-345 6789", placeholder: "எ.கா. +60 12-345 6789" },
+      { icon: "📧", label: "மின்னஞ்சல்", question: "உங்கள் மின்னஞ்சல் முகவரி என்ன?", hint: "எடுத்துக்காட்டு: ahmad@gmail.com", placeholder: "எ.கா. ahmad@gmail.com" },
+      { icon: "💼", label: "வேலை வகை", question: "சிங்கப்பூரில் நீங்கள் எந்த வகையான வேலையைத் தேடுகிறீர்கள்?", hint: "பொருந்தும் அனைத்தையும் தேர்ந்தெடுக்கவும்.", options: ["கட்டுமானம்","சுத்தம்","டெலிவரி / லாஜிஸ்டிக்ஸ்","பாதுகாப்பு","கிடங்கு","உணவு & பானம் / சமையலறை","உற்பத்தி","மற்றவை"] },
+      { icon: "🕐", label: "பணி ஏற்பாடு", question: "நீங்கள் எந்த வகையான பணி ஏற்பாட்டிற்கு தயாராக உள்ளீர்கள்?", hint: "", options: ["முழு நேரம்","பகுதி நேரம்","ஷிப்ட் வேலை"] },
+      { icon: "📅", label: "கிடைக்கும் தன்மை", question: "சிங்கப்பூரில் நீங்கள் எப்போது வேலை செய்யத் தொடங்கலாம்?", hint: "", options: ["உடனடியாக","1 வாரத்திற்குள்","1 மாதத்திற்குள்"] },
+      { icon: "💰", label: "எதிர்பார்க்கும் சம்பளம் (SGD)", question: "சிங்கப்பூரில் உங்கள் எதிர்பார்க்கும் மாத சம்பளம் என்ன?", hint: "சிங்கப்பூர் டாலர்களில். நெகிழ்வானதாக இருந்தால் காலியாக விடவும்.", placeholder: "எ.கா. 1800" },
+      { icon: "📊", label: "அனுபவம்", question: "உங்களுக்கு எத்தனை வருட அனுபவம் உள்ளது?", hint: "இந்த வகை வேலையில்.", options: ["அனுபவம் இல்லை","< 1 வருடம்","1–3 வருடங்கள்","3–5 வருடங்கள்","5–10 வருடங்கள்","10+ வருடங்கள்"] },
+      { icon: "🏢", label: "பணி 1 பதவி", question: "உங்கள் சமீபத்திய வேலைப் பதவி என்ன?", hint: "எடுத்துக்காட்டு: கட்டுமானத் தொழிலாளி, பாதுகாப்புக் காவலர், துப்புரவாளர்", placeholder: "எ.கா. கட்டுமானத் தொழிலாளி" },
+      { icon: "🏢", label: "பணி 1 நிறுவனம்", question: "நீங்கள் எந்த நிறுவனத்தில் பணிபுரிந்தீர்கள்?", hint: "", placeholder: "எ.கா. லிம் கன்ஸ்ட்ரக்ஷன் பி.டி. லிட்" },
+      { icon: "🏢", label: "பணி 1 காலம்", question: "நீங்கள் எப்போது அங்கு பணிபுரிந்தீர்கள்?", hint: "எடுத்துக்காட்டு: ஜன 2022 – மார் 2024", placeholder: "எ.கா. ஜன 2022 – மார் 2024" },
+      { icon: "🏢", label: "பணி 2 பதவி", question: "உங்கள் இரண்டாவது சமீபத்திய வேலைப் பதவி என்ன?", hint: "உங்களுக்கு ஒரே ஒரு வேலை மட்டும் இருந்தால் காலியாக விடவும்.", placeholder: "எ.கா. கிடங்குத் தொழிலாளி" },
+      { icon: "🏢", label: "பணி 2 நிறுவனம்", question: "அது எந்த நிறுவனம்?", hint: "", placeholder: "எ.கா. ஏபிசி லாஜிஸ்டிக்ஸ்" },
+      { icon: "🏢", label: "பணி 2 காலம்", question: "நீங்கள் எப்போது அங்கு பணிபுரிந்தீர்கள்?", hint: "எடுத்துக்காட்டு: மார் 2020 – டிச 2021", placeholder: "எ.கா. மார் 2020 – டிச 2021" },
+      { icon: "🏢", label: "பணி 3 பதவி", question: "உங்கள் மூன்றாவது சமீபத்திய வேலைப் பதவி என்ன?", hint: "உங்களுக்கு இரண்டு வேலைகள் மட்டும் இருந்தால் காலியாக விடவும்.", placeholder: "எ.கா. துப்புரவாளர்" },
+      { icon: "🏢", label: "பணி 3 நிறுவனம்", question: "அது எந்த நிறுவனம்?", hint: "", placeholder: "எ.கா. எக்ஸ்வைஇஸட் சர்வீசஸ்" },
+      { icon: "🏢", label: "பணி 3 காலம்", question: "நீங்கள் எப்போது அங்கு பணிபுரிந்தீர்கள்?", hint: "எடுத்துக்காட்டு: ஜன 2018 – பிப் 2020", placeholder: "எ.கா. ஜன 2018 – பிப் 2020" },
+      { icon: "🔧", label: "திறன்கள்", question: "உங்களுக்கு என்ன திறன்கள் மற்றும் கருவிகள் தெரியும்?", hint: "எடுத்துக்காட்டு: ஃபோர்க்லிஃப்ட், சாரக்கட்டு, வெல்டிங், சுத்தம் செய்யும் உபகரணங்கள், ஓட்டுநர்", placeholder: "எ.கா. ஃபோர்க்லிஃப்ட், சாரக்கட்டு, வெல்டிங்" },
+      { icon: "📜", label: "சான்றிதழ்கள்", question: "உங்களிடம் ஏதேனும் சான்றிதழ்கள் அல்லது உரிமங்கள் உள்ளனவா?", hint: "எடுத்துக்காட்டு: ஃபோர்க்லிஃப்ட் உரிமம், பிசிஎஸ்எஸ், உணவு சுகாதார சான்றிதழ், பாதுகாப்பு உரிமம்", placeholder: "எ.கா. ஃபோர்க்லிஃப்ட் உரிமம், பிசிஎஸ்எஸ்" },
+      { icon: "🎓", label: "கல்வி", question: "உங்கள் மிக உயர்ந்த கல்வி நிலை என்ன?", hint: "", options: ["முறையான கல்வி இல்லை","தொடக்கப் பள்ளி","இடைநிலைப் பள்ளி","தொழிற்கல்வி / ஐடிஇ","டிப்ளமோ","பட்டம் அல்லது அதற்கு மேல்"] },
+      { icon: "🗣", label: "மொழிகள்", question: "நீங்கள் எந்த மொழிகளைப் பேசலாம் அல்லது படிக்கலாம்?", hint: "பொருந்தும் அனைத்தையும் தேர்ந்தெடுக்கவும்.", options: ["ஆங்கிலம்","மாண்டரின்","மலாய்","தமிழ்","இந்தி","வங்காளம்"] },
+    ],
+    reviewSections: {
+      personal: "தனிப்பட்ட விவரங்கள்",
+      job: "வேலை விருப்பங்கள்",
+      experience: "பணி அனுபவம்",
+      skills: "திறன்கள் & கல்வி",
+    },
+    errors: {
+      required: "இந்த புலம் தேவை.",
+      dob: "சரியான தேதியை உள்ளிடவும். எ.கா: 15 ஜன 1990",
+      phone: "நாட்டு குறியீட்டுடன் சரியான எண் உள்ளிடவும்.",
+      email: "சரியான மின்னஞ்சல் உள்ளிடவும்.",
+      salary: "எண் உள்ளிடவும், எ.கா. 1800",
+      daterange: "தேதி உள்ளிடவும், எ.கா. ஜன 2022 – மார் 2024",
+    },
+    successTitle: (name) => `நன்றி, ${name}! 🎉`,
+    successMsg: (agency) => `உங்கள் ரெஸ்யூம் ${agency}-க்கு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. அவர்கள் உங்கள் விவரங்களை மதிப்பாய்வு செய்து பொருத்தமான பதவி இருந்தால் உங்களை தொடர்புகொள்வார்கள்.\n\nவாழ்த்துக்கள்! 🙏`,
   },
 };
 
-// ── State ─────────────────────────────────────────────────────────────────────
+// ============================================================
+// GLOBALS
+// ============================================================
 let lang = "en";
 let currentStep = 0;
 let data = {};
 let editingKey = null;
 
+// ============================================================
+// HELPERS
+// ============================================================
 function t(key, ...args) {
-  const L = TR[lang] ?? TR.en;
-  const v = L[key] ?? TR.en[key];
-  return typeof v === "function" ? v(...args) : v;
+  const L = CONTENT[lang] || CONTENT.en;
+  const v = L[key];
+  if (typeof v === "function") return v(...args);
+  return v || CONTENT.en[key];
 }
 
-function getSteps() { return TR.en.steps; } // always use English step definitions
+function getCurrentStepContent() {
+  const content = CONTENT[lang] || CONTENT.en;
+  return content.steps[currentStep] || null;
+}
 
-// ── Validation ────────────────────────────────────────────────────────────────
+function getTotalSteps() {
+  return STEPS.length;
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
 function validateField(type, value) {
-  if (!value || !value.trim()) return null; // handled separately
+  if (!value || !value.trim()) return null;
+  const errors = t("errors") || CONTENT.en.errors;
+  
   switch(type) {
     case "dob": {
       const ok = /^\d{1,2}[\s\/\-][A-Za-z\d]{1,9}[\s\/\-]\d{4}$/.test(value.trim()) || /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}$/.test(value.trim());
-      if (!ok) return t("errDob");
+      if (!ok) return errors.dob;
       const yr = value.match(/\d{4}/);
-      if (yr) { const y=parseInt(yr[0]); if(y<1920||y>new Date().getFullYear()-10) return t("errDob"); }
+      if (yr) { const y=parseInt(yr[0]); if(y<1920||y>new Date().getFullYear()-10) return errors.dob; }
       return null;
     }
-    case "phone": { const d=value.replace(/\D/g,""); return (d.length<7||d.length>15)?t("errPhone"):null; }
-    case "email": return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?t("errEmail"):null;
-    case "salary": return !/\d/.test(value)?t("errSalary"):null;
-    case "daterange": return (/present|current|now/i.test(value)||/\d{4}/.test(value))?null:t("errDate");
+    case "phone": { 
+      const d=value.replace(/\D/g,""); 
+      return (d.length<7||d.length>15)?errors.phone:null; 
+    }
+    case "email": return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?errors.email:null;
+    case "salary": return !/\d/.test(value)?errors.salary:null;
+    case "daterange": return (/present|current|now/i.test(value)||/\d{4}/.test(value))?null:errors.daterange;
     default: return null;
   }
 }
 
-// ── Render wizard ─────────────────────────────────────────────────────────────
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
 function render() {
-  const steps = getSteps();
-  const total = steps.length + 1; // +1 for review
-  const isReview = currentStep >= steps.length;
-
-  // Progress
-  const pct = Math.round((currentStep / total) * 100);
+  const totalSteps = getTotalSteps();
+  const isReview = currentStep >= totalSteps;
+  
+  // Update progress
+  const pct = Math.round((currentStep / (totalSteps + 1)) * 100);
   document.getElementById("progressFill").style.width = pct + "%";
   document.getElementById("stepPct").textContent = pct + "%";
-  document.getElementById("stepLabel").textContent = isReview
-    ? t("reviewTitle")
-    : t("stepOf", currentStep + 1, steps.length);
+  document.getElementById("stepLabel").textContent = isReview ? t("reviewTitle") : `${t("stepOf", currentStep + 1, totalSteps)}`;
   document.getElementById("progressWrap").style.display = isReview ? "none" : "";
-
-  if (isReview) { renderReview(); return; }
-
-  const s = steps[currentStep];
-  const val = data[s.k] ?? "";
-
+  
+  if (isReview) {
+    renderReview();
+    return;
+  }
+  
+  const stepDef = STEPS[currentStep];
+  const content = getCurrentStepContent();
+  const val = data[stepDef.key] || "";
+  
   const wizard = document.getElementById("wizard");
   wizard.innerHTML = "";
-
+  
   const card = document.createElement("div");
   card.className = "step-card active";
-
+  
   let inner = `
-    <div class="step-icon">${s.ic}</div>
-    <div class="step-label">${s.label}</div>
-    <div class="step-q">${s.q}</div>
-    ${s.hint ? `<div class="step-hint">${s.hint}</div>` : ""}
+    <div class="step-icon">${content.icon}</div>
+    <div class="step-label">${content.label}</div>
+    <div class="step-q">${content.question}</div>
+    ${content.hint ? `<div class="step-hint">${content.hint}</div>` : ""}
   `;
-
-  if (s.type === "text") {
+  
+  if (stepDef.type === "text") {
     inner += `
-      <input class="field" id="mainField" type="text" placeholder="${s.ph ?? ""}" value="${escHtml(val)}" />
+      <input class="field" id="mainField" type="text" placeholder="${content.placeholder || ""}" value="${escHtml(val)}" />
       <div class="field-error" id="fieldErr"></div>
     `;
-    if (s.optional) {
+    if (stepDef.optional) {
       inner += `<div style="margin-top:10px;"><button class="opt-btn" style="width:100%;text-align:center;color:var(--muted);" onclick="skipField()">${t("naBtn")}</button></div>`;
     }
     inner += `<div class="nav">
       ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
       <button class="btn-next" onclick="goNext()">${t("next")}</button>
     </div>`;
-  } else if (s.type === "opts") {
-    const cols = s.opts.length <= 3 ? "single" : "";
+  } else if (stepDef.type === "opts") {
+    const options = content.options || [];
+    const cols = options.length <= 3 ? "single" : "";
     inner += `<div class="opts-grid ${cols}" id="optsGrid">`;
-    s.opts.forEach(o => {
+    options.forEach(o => {
       const sel = val === o ? "selected" : "";
       inner += `<button class="opt-btn ${sel}" onclick="selectOpt(this,'${escHtml(o)}')">${o}</button>`;
     });
     inner += `</div>`;
-    if (s.optional) inner += `<button class="opt-btn" style="width:100%;margin-top:10px;text-align:center;color:var(--muted);" onclick="skipField()">${t("naBtn")}</button>`;
+    if (stepDef.optional) inner += `<button class="opt-btn" style="width:100%;margin-top:10px;text-align:center;color:var(--muted);" onclick="skipField()">${t("naBtn")}</button>`;
     inner += `<div class="nav">
       ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
-      <button class="btn-next" id="nextBtn" ${!val?'disabled':''} onclick="goNext()">${t("next")}</button>
+      <button class="btn-next" id="nextBtn" ${!val ? 'disabled' : ''} onclick="goNext()">${t("next")}</button>
     </div>`;
-  } else if (s.type === "multi") {
+  } else if (stepDef.type === "multi") {
+    const options = content.options || [];
     const selected = val ? val.split(", ").filter(Boolean) : [];
     inner += `<div class="opts-grid" id="optsGrid">`;
-    s.opts.forEach(o => {
+    options.forEach(o => {
       const sel = selected.includes(o) ? "selected" : "";
       inner += `<button class="opt-btn ${sel}" onclick="toggleMulti(this,'${escHtml(o)}')">${o}</button>`;
     });
     inner += `</div>`;
-    inner += `<button class="multi-done ${selected.length>0?'show':''}" id="doneBtn" onclick="goNext()">${t("doneBtn")}</button>`;
+    inner += `<button class="multi-done ${selected.length > 0 ? 'show' : ''}" id="doneBtn" onclick="goNext()">${t("doneBtn")}</button>`;
     inner += `<div class="nav">
       ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
     </div>`;
   }
-
+  
   card.innerHTML = inner;
   wizard.appendChild(card);
-
-  // Focus text input
-  if (s.type === "text") {
+  
+  if (stepDef.type === "text") {
     setTimeout(() => document.getElementById("mainField")?.focus(), 100);
-    document.getElementById("mainField")?.addEventListener("keydown", e => { if(e.key==="Enter") goNext(); });
+    document.getElementById("mainField")?.addEventListener("keydown", e => { if(e.key === "Enter") goNext(); });
   }
 }
 
 function renderReview() {
-  const steps = getSteps();
   const wizard = document.getElementById("wizard");
   wizard.innerHTML = "";
   const card = document.createElement("div");
   card.className = "step-card active";
-
+  
   const sections = [
-    { title: TR.en.reviewSections.personal, keys: ["agency","name","dob","nationality","country","city","phone","email"] },
-    { title: TR.en.reviewSections.job,      keys: ["jobType","workArrange","availability","salary","experience"] },
-    { title: TR.en.reviewSections.experience, keys: ["job1Title","job1Company","job1Dates","job2Title","job2Company","job2Dates","job3Title","job3Company","job3Dates"] },
-    { title: TR.en.reviewSections.skills,   keys: ["skills","certs","education","languages"] },
+    { title: t("reviewSections").personal, keys: ["agency","name","dob","nationality","country","city","phone","email"] },
+    { title: t("reviewSections").job,      keys: ["jobType","workArrange","availability","salary","experience"] },
+    { title: t("reviewSections").experience, keys: ["job1Title","job1Company","job1Dates","job2Title","job2Company","job2Dates","job3Title","job3Company","job3Dates"] },
+    { title: t("reviewSections").skills,   keys: ["skills","certs","education","languages"] },
   ];
-
+  
   let html = `
     <div class="step-icon">📋</div>
     <div class="step-q">${t("reviewTitle")}</div>
     <div class="step-hint">${t("reviewHint")} ${t("editHint")}</div>
   `;
-
+  
   sections.forEach(sec => {
-    const rows = sec.keys.map(k => {
-      const s = steps.find(x=>x.k===k);
-      if (!s) return "";
+    let rows = "";
+    sec.keys.forEach(k => {
+      const stepIndex = STEPS.findIndex(s => s.key === k);
+      if (stepIndex === -1) return;
+      const stepDef = STEPS[stepIndex];
+      const content = (CONTENT[lang] || CONTENT.en).steps[stepIndex];
+      if (!content) return;
       const v = data[k];
-      if (!v && s.optional) return "";
-      return `<div class="review-row" onclick="editField('${k}')">
-        <span class="review-ic">${s.ic}</span>
-        <span class="review-lb">${s.label}</span>
-        <span class="review-val">${escHtml(v||"—")}</span>
+      if (!v && stepDef.optional) return;
+      rows += `<div class="review-row" onclick="editField('${k}')">
+        <span class="review-ic">${content.icon}</span>
+        <span class="review-lb">${content.label}</span>
+        <span class="review-val">${escHtml(v || "—")}</span>
         <span class="review-edit">Edit</span>
       </div>`;
-    }).join("");
+    });
     if (!rows.trim()) return;
     html += `<div class="review-section">
       <div class="review-section-title">${sec.title}</div>
       ${rows}
     </div>`;
   });
-
+  
   html += `<button class="btn-submit" onclick="submitResume()">${t("submit")}</button>`;
   html += `<div class="nav"><button class="btn-back" onclick="goBack()">${t("back")}</button></div>`;
-
+  
   card.innerHTML = html;
   wizard.appendChild(card);
 }
 
-// ── Actions ───────────────────────────────────────────────────────────────────
+// ============================================================
+// ACTIONS
+// ============================================================
 function selectOpt(btn, val) {
   btn.closest(".opts-grid").querySelectorAll(".opt-btn").forEach(b => b.classList.remove("selected"));
   btn.classList.add("selected");
-  const s = getSteps()[currentStep];
-  data[s.k] = val;
+  const stepDef = STEPS[currentStep];
+  data[stepDef.key] = val;
   const nb = document.getElementById("nextBtn");
   if (nb) nb.disabled = false;
 }
 
 function toggleMulti(btn, val) {
   btn.classList.toggle("selected");
-  const s = getSteps()[currentStep];
+  const stepDef = STEPS[currentStep];
   const selected = Array.from(btn.closest(".opts-grid").querySelectorAll(".opt-btn.selected")).map(b => b.textContent.trim());
-  data[s.k] = selected.join(", ");
+  data[stepDef.key] = selected.join(", ");
   const db = document.getElementById("doneBtn");
   if (db) { db.classList.toggle("show", selected.length > 0); }
 }
 
 function skipField() {
-  const s = getSteps()[currentStep];
-  data[s.k] = "";
+  const stepDef = STEPS[currentStep];
+  data[stepDef.key] = "";
   advance();
 }
 
 function goNext() {
-  const steps = getSteps();
-  if (currentStep >= steps.length) return;
-  const s = steps[currentStep];
-
-  if (s.type === "text") {
+  const stepDef = STEPS[currentStep];
+  const errors = t("errors") || CONTENT.en.errors;
+  
+  if (stepDef.type === "text") {
     const field = document.getElementById("mainField");
-    const val = field?.value.trim() ?? "";
+    const val = field?.value.trim() || "";
     const errEl = document.getElementById("fieldErr");
-
-    if (!val && !s.optional) { showErr(errEl, t("errRequired")); return; }
-    if (val && s.validate) {
-      const err = validateField(s.validate, val);
+    
+    if (!val && !stepDef.optional) { 
+      showErr(errEl, errors.required); 
+      return; 
+    }
+    if (val && stepDef.validate) {
+      const err = validateField(stepDef.validate, val);
       if (err) { showErr(errEl, err); return; }
     }
-    data[s.k] = val;
-  } else if (s.type === "multi") {
-    if (!data[s.k] || !data[s.k].trim()) return;
-  } else if (s.type === "opts") {
-    if (!data[s.k]) return;
+    data[stepDef.key] = val;
+  } else if (stepDef.type === "multi") {
+    if (!data[stepDef.key] || !data[stepDef.key].trim()) return;
+  } else if (stepDef.type === "opts") {
+    if (!data[stepDef.key]) return;
   }
-
-  if (editingKey) { editingKey = null; currentStep = steps.length; render(); return; }
+  
+  if (editingKey) { 
+    editingKey = null; 
+    currentStep = getTotalSteps(); 
+    render(); 
+    return; 
+  }
   advance();
 }
 
 function advance() {
-  const steps = getSteps();
   currentStep++;
-  // Skip job2/job3 company+dates if title is blank
-  while (currentStep < steps.length) {
-    const s = steps[currentStep];
-    if (s.k === "job2Company" || s.k === "job2Dates") {
+  // Skip optional job2/job3 fields if title is blank
+  while (currentStep < getTotalSteps()) {
+    const stepDef = STEPS[currentStep];
+    if (stepDef.key === "job2Company" || stepDef.key === "job2Dates") {
       if (!data["job2Title"]) { currentStep++; continue; }
     }
-    if (s.k === "job3Title" && !data["job2Title"]) { currentStep++; continue; }
-    if (s.k === "job3Company" || s.k === "job3Dates") {
+    if (stepDef.key === "job3Title" && !data["job2Title"]) { currentStep++; continue; }
+    if (stepDef.key === "job3Company" || stepDef.key === "job3Dates") {
       if (!data["job3Title"]) { currentStep++; continue; }
     }
     break;
@@ -756,13 +908,21 @@ function advance() {
 }
 
 function goBack() {
-  if (editingKey) { editingKey = null; currentStep = getSteps().length; render(); return; }
-  if (currentStep > 0) { currentStep--; render(); window.scrollTo(0,0); }
+  if (editingKey) { 
+    editingKey = null; 
+    currentStep = getTotalSteps(); 
+    render(); 
+    return; 
+  }
+  if (currentStep > 0) { 
+    currentStep--; 
+    render(); 
+    window.scrollTo(0,0); 
+  }
 }
 
 function editField(key) {
-  const steps = getSteps();
-  const idx = steps.findIndex(s => s.k === key);
+  const idx = STEPS.findIndex(s => s.key === key);
   if (idx < 0) return;
   editingKey = key;
   currentStep = idx;
@@ -781,16 +941,18 @@ function changeLang(l) {
   render();
 }
 
-// ── Submit ─────────────────────────────────────────────────────────────────────
+// ============================================================
+// SUBMIT
+// ============================================================
 async function submitResume() {
   const btn = document.querySelector(".btn-submit");
   if (btn) btn.disabled = true;
-
+  
   const loadingEl = document.getElementById("loading");
   const loadingMsg = document.getElementById("loadingMsg");
   loadingMsg.textContent = t("submitting");
   loadingEl.classList.add("show");
-
+  
   try {
     const res = await fetch("/submit", {
       method: "POST",
@@ -832,7 +994,16 @@ function escHtml(str) {
   return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// Add missing t function for stepOf
+CONTENT.en.stepOf = (a,b) => `Step ${a} of ${b}`;
+CONTENT.zh.stepOf = (a,b) => `第 ${a} 步，共 ${b} 步`;
+CONTENT.ms.stepOf = (a,b) => `Langkah ${a} daripada ${b}`;
+CONTENT.ta.stepOf = (a,b) => `படி ${a} / ${b}`;
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById("langSel").addEventListener("change", (e) => changeLang(e.target.value));
 render();
 </script>
 </body>
