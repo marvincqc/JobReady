@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeBuilder — Build Your Resume</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --accent-light: #eff6ff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --error: #dc2626;
+  --error-light: #fef2f2;
+  --radius: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.logo-name { font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+.lang-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+
+/* ── Progress ── */
+.progress-wrap {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* ── Main ── */
+main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px 80px;
+}
+
+.wizard {
+  width: 100%;
+  max-width: 540px;
+}
+
+/* ── Step card ── */
+.step-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 36px 32px;
+  animation: fadeUp 0.3s ease;
+  display: none;
+}
+.step-card.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-icon {
+  width: 52px; height: 52px;
+  background: var(--accent-light);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.step-q {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+.step-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* ── Input ── */
+.field {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+}
+.field:focus { border-color: var(--accent); }
+.field.error { border-color: var(--error); background: var(--error-light); }
+.field-error {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 6px;
+  font-weight: 500;
+  display: none;
+}
+.field-error.show { display: block; }
+
+/* ── Options grid ── */
+.opts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.opts-grid.single { grid-template-columns: 1fr; }
+
+.opt-btn {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+.opt-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.opt-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+/* ── Multi-select done btn ── */
+.multi-done {
+  margin-top: 14px;
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: none;
+}
+.multi-done:hover { background: var(--accent-dark); }
+.multi-done.show { display: block; }
+
+/* ── Nav buttons ── */
+.nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.btn-back {
+  flex: 0 0 auto;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-back:hover { border-color: var(--text); color: var(--text); }
+.btn-next {
+  flex: 1;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-next:hover { background: var(--accent-dark); }
+.btn-next:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* ── Review card ── */
+.review-section { margin-bottom: 20px; }
+.review-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.review-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bg);
+  cursor: pointer;
+  border-radius: 6px;
+  padding-left: 4px;
+  transition: background 0.1s;
+}
+.review-row:hover { background: var(--bg); }
+.review-row:last-child { border-bottom: none; }
+.review-ic { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.review-lb { font-size: 11px; color: var(--muted); font-weight: 500; min-width: 90px; margin-top: 2px; }
+.review-val { flex: 1; font-size: 14px; font-weight: 500; line-height: 1.4; }
+.review-edit { font-size: 12px; color: var(--accent); font-weight: 500; flex-shrink: 0; }
+
+/* ── Submit btn ── */
+.btn-submit {
+  width: 100%;
+  background: var(--success);
+  border: none;
+  border-radius: 10px;
+  padding: 15px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background 0.15s;
+}
+.btn-submit:hover { background: #15803d; }
+.btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+/* ── Success screen ── */
+.success-screen {
+  text-align: center;
+  padding: 20px 0;
+}
+.success-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  display: block;
+}
+.success-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+.success-msg {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── Loading overlay ── */
+.loading {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.loading.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-msg { font-size: 15px; font-weight: 500; color: var(--muted); }
+
+@media (max-width: 480px) {
+  .step-card { padding: 24px 20px; }
+  .step-q { font-size: 19px; }
+  .opts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">📋</div>
+    <div class="logo-name">ResumeBuilder</div>
+  </div>
+  <select class="lang-select" id="langSel" onchange="changeLang(this.value)">
+    <option value="en">🇬🇧 English</option>
+    <option value="zh">🇨🇳 中文</option>
+    <option value="ms">🇲🇾 Melayu</option>
+    <option value="ta">🇮🇳 தமிழ்</option>
+    <option value="hi">🇮🇳 हिन्दी</option>
+    <option value="bn">🇧🇩 বাংলা</option>
+  </select>
+</div>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-info">
+    <span id="stepLabel">Step 1 of 20</span>
+    <span id="stepPct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<main>
+  <div class="wizard" id="wizard"></div>
+</main>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-msg" id="loadingMsg">Generating your resume...</div>
+</div>
+
+<script>
+// ── Translations ──────────────────────────────────────────────────────────────
+const TR = {
+  en: {
+    stepOf: (a,b) => `Step ${a} of ${b}`,
+    back: "← Back", next: "Continue →", submit: "Submit Resume ✓",
+    submitting: "Submitting your resume...",
+    editHint: "Tap any field to edit it",
+    reviewTitle: "Review Your Resume",
+    reviewHint: "Check everything carefully before submitting.",
+    naBtn: "Not applicable / Skip",
+    doneBtn: "Done — next step →",
+    successTitle: (name) => `Thank you, ${name}! 🎉`,
+    successMsg: (agency) => `Your resume has been successfully submitted to ${agency}. They will review your details and contact you if there is a suitable position.\n\nGood luck! 🙏`,
+    errRequired: "This field is required.",
+    errDob: "Please enter a valid date. Example: 15 Jan 1990",
+    errPhone: "Please enter a valid phone number with country code.",
+    errEmail: "Please enter a valid email address.",
+    errSalary: "Please enter a number, e.g. 1800",
+    errDate: "Please enter dates, e.g. Jan 2022 – Mar 2024",
+    steps: [
+      { k:"agency",      ic:"🏬", label:"Agency",      q:"Which manpower agency is this resume for?",                      hint:"Type the agency name exactly as given to you.",                              type:"text",  ph:"e.g. Worklink Manpower Pte Ltd" },
+      { k:"name",        ic:"👤", label:"Full name",    q:"What is your full name?",                                        hint:"Enter your full legal name.",                                               type:"text",  ph:"e.g. Ahmad bin Ramli" },
+      { k:"dob",         ic:"🎂", label:"Date of birth",q:"What is your date of birth?",                                   hint:"Example: 15 Jan 1990 or 15/01/1990",                                        type:"text",  ph:"e.g. 15 Jan 1990", validate:"dob" },
+      { k:"nationality", ic:"🌏", label:"Nationality",  q:"What is your nationality?",                                     hint:"Example: Malaysian, Indian, Bangladeshi, Filipino",                         type:"text",  ph:"e.g. Malaysian" },
+      { k:"country",     ic:"📍", label:"Country",      q:"Which country are you currently living in?",                    hint:"",                                                                          type:"text",  ph:"e.g. Malaysia" },
+      { k:"city",        ic:"🏙", label:"City",         q:"Which city or town are you in?",                                hint:"",                                                                          type:"text",  ph:"e.g. Kuala Lumpur" },
+      { k:"phone",       ic:"📞", label:"Phone",        q:"What is your phone number?",                                    hint:"Include your country code. Example: +60 12-345 6789",                       type:"text",  ph:"e.g. +60 12-345 6789", validate:"phone" },
+      { k:"email",       ic:"📧", label:"Email",        q:"What is your email address?",                                   hint:"Example: ahmad@gmail.com",                                                  type:"text",  ph:"e.g. ahmad@gmail.com", validate:"email" },
+      { k:"jobType",     ic:"💼", label:"Job type",     q:"What type of work are you looking for in Singapore?",           hint:"Select all that apply.",                                                     type:"multi", opts:["Construction","Cleaning","Delivery / Logistics","Security","Warehouse","F&B / Kitchen","Manufacturing","Other"] },
+      { k:"workArrange", ic:"🕐", label:"Arrangement",  q:"What type of work arrangement are you open to?",               hint:"",                                                                          type:"opts",  opts:["Full-time","Part-time","Shift work"] },
+      { k:"availability",ic:"📅", label:"Availability", q:"When can you start work in Singapore?",                        hint:"",                                                                          type:"opts",  opts:["Immediately","Within 1 week","Within 1 month"] },
+      { k:"salary",      ic:"💰", label:"Salary (SGD)", q:"What is your expected monthly salary in Singapore?",           hint:"In Singapore Dollars. Leave blank if flexible.",                            type:"text",  ph:"e.g. 1800", optional:true, validate:"salary" },
+      { k:"experience",  ic:"📊", label:"Experience",   q:"How many years of experience do you have?",                    hint:"In this type of work.",                                                     type:"opts",  opts:["No experience","< 1 year","1–3 years","3–5 years","5–10 years","10+ years"] },
+      { k:"job1Title",   ic:"🏢", label:"Job 1 title",  q:"What was your most recent job title?",                         hint:"Example: Construction Worker, Security Guard, Cleaner",                     type:"text",  ph:"e.g. Construction Worker" },
+      { k:"job1Company", ic:"🏢", label:"Job 1 company",q:"Which company did you work at?",                               hint:"",                                                                          type:"text",  ph:"e.g. Lim Construction Pte Ltd" },
+      { k:"job1Dates",   ic:"🏢", label:"Job 1 dates",  q:"When did you work there?",                                    hint:"Example: Jan 2022 – Mar 2024",                                              type:"text",  ph:"e.g. Jan 2022 – Mar 2024", validate:"daterange" },
+      { k:"job2Title",   ic:"🏢", label:"Job 2 title",  q:"What was your 2nd most recent job title?",                    hint:"Leave blank if you only have one job.",                                     type:"text",  ph:"e.g. Warehouse Worker", optional:true },
+      { k:"job2Company", ic:"🏢", label:"Job 2 company",q:"Which company was that?",                                      hint:"",                                                                          type:"text",  ph:"e.g. ABC Logistics", optional:true },
+      { k:"job2Dates",   ic:"🏢", label:"Job 2 dates",  q:"When did you work there?",                                    hint:"Example: Mar 2020 – Dec 2021",                                             type:"text",  ph:"e.g. Mar 2020 – Dec 2021", optional:true, validate:"daterange" },
+      { k:"job3Title",   ic:"🏢", label:"Job 3 title",  q:"What was your 3rd most recent job title?",                    hint:"Leave blank if you only have two jobs.",                                    type:"text",  ph:"e.g. Cleaner", optional:true },
+      { k:"job3Company", ic:"🏢", label:"Job 3 company",q:"Which company was that?",                                      hint:"",                                                                          type:"text",  ph:"e.g. XYZ Services", optional:true },
+      { k:"job3Dates",   ic:"🏢", label:"Job 3 dates",  q:"When did you work there?",                                    hint:"Example: Jan 2018 – Feb 2020",                                             type:"text",  ph:"e.g. Jan 2018 – Feb 2020", optional:true, validate:"daterange" },
+      { k:"skills",      ic:"🔧", label:"Skills",       q:"What skills and tools do you know?",                           hint:"Example: Forklift, scaffolding, welding, cleaning equipment, driving",       type:"text",  ph:"e.g. Forklift, scaffolding, welding" },
+      { k:"certs",       ic:"📜", label:"Certifications",q:"Do you have any certifications or licences?",                 hint:"Example: Forklift licence, BCSS, Food Hygiene cert, Security licence",      type:"text",  ph:"e.g. Forklift licence, BCSS", optional:true },
+      { k:"education",   ic:"🎓", label:"Education",    q:"What is your highest education level?",                        hint:"",                                                                          type:"opts",  opts:["No formal education","Primary school","Secondary school","Vocational / ITE","Diploma","Degree or higher"] },
+      { k:"languages",   ic:"🗣", label:"Languages",    q:"Which languages can you speak or read?",                       hint:"Select all that apply.",                                                    type:"multi", opts:["English","Mandarin","Malay","Tamil","Hindi","Bengali"] },
+    ],
+    reviewSections: {
+      personal: "Personal Details",
+      job: "Job Preferences",
+      experience: "Work Experience",
+      skills: "Skills & Education",
+    }
+  },
+  // Other languages use English steps with translated UI strings only
+  zh: {
+    stepOf: (a,b) => `第 ${a} 步，共 ${b} 步`,
+    back:"← 返回", next:"继续 →", submit:"提交简历 ✓",
+    submitting:"正在提交您的简历...",
+    editHint:"点击任意字段进行编辑",
+    reviewTitle:"核对您的简历",
+    reviewHint:"提交前请仔细检查所有信息。",
+    naBtn:"不适用 / 跳过", doneBtn:"完成 — 下一步 →",
+    successTitle:(name)=>`谢谢您，${name}！🎉`,
+    successMsg:(agency)=>`您的简历已成功提交至 ${agency}。他们将审核您的资料，如有合适职位将与您联系。\n\n祝您好运！🙏`,
+    errRequired:"此字段为必填项。", errDob:"请输入有效日期。示例：15 Jan 1990",
+    errPhone:"请输入包含国家代码的有效电话号码。", errEmail:"请输入有效的电子邮件地址。",
+    errSalary:"请输入数字，例如 1800", errDate:"请输入日期，例如 Jan 2022 – Mar 2024",
+  },
+  ms: {
+    stepOf:(a,b)=>`Langkah ${a} daripada ${b}`,
+    back:"← Kembali", next:"Teruskan →", submit:"Hantar Resume ✓",
+    submitting:"Menghantar resume anda...",
+    editHint:"Ketik mana-mana medan untuk mengedit",
+    reviewTitle:"Semak Resume Anda",
+    reviewHint:"Semak semua maklumat dengan teliti sebelum menghantar.",
+    naBtn:"Tidak berkenaan / Langkau", doneBtn:"Selesai — langkah seterusnya →",
+    successTitle:(name)=>`Terima kasih, ${name}! 🎉`,
+    successMsg:(agency)=>`Resume anda telah berjaya dihantar ke ${agency}. Mereka akan menyemak maklumat anda dan menghubungi anda jika ada jawatan yang sesuai.\n\nSemoga berjaya! 🙏`,
+    errRequired:"Medan ini diperlukan.", errDob:"Sila masukkan tarikh yang sah. Contoh: 15 Jan 1990",
+    errPhone:"Sila masukkan nombor telefon dengan kod negara.", errEmail:"Sila masukkan alamat e-mel yang sah.",
+    errSalary:"Sila masukkan nombor, cth. 1800", errDate:"Sila masukkan tarikh, cth. Jan 2022 – Mac 2024",
+  },
+  ta: {
+    stepOf:(a,b)=>`படி ${a} / ${b}`,
+    back:"← திரும்பு", next:"தொடரவும் →", submit:"Resume சமர்ப்பி ✓",
+    submitting:"உங்கள் resume சமர்ப்பிக்கிறோம்...",
+    editHint:"திருத்த எந்த புலத்தையும் தட்டவும்",
+    reviewTitle:"உங்கள் Resume சரிபார்க்கவும்",
+    reviewHint:"சமர்ப்பிக்கும் முன் அனைத்தையும் கவனமாக சரிபார்க்கவும்.",
+    naBtn:"பொருந்தாது / தவிர்", doneBtn:"முடிந்தது — அடுத்த படி →",
+    successTitle:(name)=>`நன்றி, ${name}! 🎉`,
+    successMsg:(agency)=>`உங்கள் resume ${agency}-க்கு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.\n\nவாழ்த்துக்கள்! 🙏`,
+    errRequired:"இந்த புலம் தேவை.", errDob:"சரியான தேதியை உள்ளிடவும். எ.கா: 15 Jan 1990",
+    errPhone:"நாட்டு குறியீட்டுடன் சரியான எண் உள்ளிடவும்.", errEmail:"சரியான மின்னஞ்சல் உள்ளிடவும்.",
+    errSalary:"எண் உள்ளிடவும், எ.கா. 1800", errDate:"தேதி உள்ளிடவும், எ.கா. Jan 2022 – Mar 2024",
+  },
+  hi: {
+    stepOf:(a,b)=>`चरण ${a} / ${b}`,
+    back:"← वापस", next:"जारी रखें →", submit:"Resume जमा करें ✓",
+    submitting:"आपका resume जमा किया जा रहा है...",
+    editHint:"संपादित करने के लिए किसी भी फ़ील्ड पर टैप करें",
+    reviewTitle:"अपना Resume जांचें",
+    reviewHint:"जमा करने से पहले सब कुछ ध्यान से जांचें।",
+    naBtn:"लागू नहीं / छोड़ें", doneBtn:"पूर्ण — अगला चरण →",
+    successTitle:(name)=>`धन्यवाद, ${name}! 🎉`,
+    successMsg:(agency)=>`आपका resume सफलतापूर्वक ${agency} को जमा कर दिया गया है।\n\nशुभकामनाएं! 🙏`,
+    errRequired:"यह फ़ील्ड आवश्यक है।", errDob:"सही तारीख दर्ज करें। उदाहरण: 15 Jan 1990",
+    errPhone:"देश कोड के साथ सही नंबर दर्ज करें।", errEmail:"सही ईमेल दर्ज करें।",
+    errSalary:"संख्या दर्ज करें, जैसे 1800", errDate:"तारीख दर्ज करें, जैसे Jan 2022 – Mar 2024",
+  },
+  bn: {
+    stepOf:(a,b)=>`ধাপ ${a} / ${b}`,
+    back:"← ফিরে যান", next:"চালিয়ে যান →", submit:"Resume জমা দিন ✓",
+    submitting:"আপনার resume জমা দেওয়া হচ্ছে...",
+    editHint:"সম্পাদনা করতে যেকোনো ক্ষেত্রে ট্যাপ করুন",
+    reviewTitle:"আপনার Resume পর্যালোচনা করুন",
+    reviewHint:"জমা দেওয়ার আগে সব কিছু সাবধানে পরীক্ষা করুন।",
+    naBtn:"প্রযোজ্য নয় / এড়িয়ে যান", doneBtn:"সম্পন্ন — পরবর্তী ধাপ →",
+    successTitle:(name)=>`ধন্যবাদ, ${name}! 🎉`,
+    successMsg:(agency)=>`আপনার resume সফলভাবে ${agency}-এ জমা দেওয়া হয়েছে।\n\nশুভকামনা! 🙏`,
+    errRequired:"এই ক্ষেত্রটি প্রয়োজন।", errDob:"সঠিক তারিখ দিন। উদাহরণ: 15 Jan 1990",
+    errPhone:"দেশের কোড সহ সঠিক নম্বর দিন।", errEmail:"সঠিক ইমেইল দিন।",
+    errSalary:"সংখ্যা দিন, যেমন 1800", errDate:"তারিখ দিন, যেমন Jan 2022 – Mar 2024",
+  },
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let lang = "en";
+let currentStep = 0;
+let data = {};
+let editingKey = null;
+
+function t(key, ...args) {
+  const L = TR[lang] ?? TR.en;
+  const v = L[key] ?? TR.en[key];
+  return typeof v === "function" ? v(...args) : v;
+}
+
+function getSteps() { return TR.en.steps; } // always use English step definitions
+
+// ── Validation ────────────────────────────────────────────────────────────────
+function validateField(type, value) {
+  if (!value || !value.trim()) return null; // handled separately
+  switch(type) {
+    case "dob": {
+      const ok = /^\d{1,2}[\s\/\-][A-Za-z\d]{1,9}[\s\/\-]\d{4}$/.test(value.trim()) || /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}$/.test(value.trim());
+      if (!ok) return t("errDob");
+      const yr = value.match(/\d{4}/);
+      if (yr) { const y=parseInt(yr[0]); if(y<1920||y>new Date().getFullYear()-10) return t("errDob"); }
+      return null;
+    }
+    case "phone": { const d=value.replace(/\D/g,""); return (d.length<7||d.length>15)?t("errPhone"):null; }
+    case "email": return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?t("errEmail"):null;
+    case "salary": return !/\d/.test(value)?t("errSalary"):null;
+    case "daterange": return (/present|current|now/i.test(value)||/\d{4}/.test(value))?null:t("errDate");
+    default: return null;
+  }
+}
+
+// ── Render wizard ─────────────────────────────────────────────────────────────
+function render() {
+  const steps = getSteps();
+  const total = steps.length + 1; // +1 for review
+  const isReview = currentStep >= steps.length;
+
+  // Progress
+  const pct = Math.round((currentStep / total) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("stepPct").textContent = pct + "%";
+  document.getElementById("stepLabel").textContent = isReview
+    ? t("reviewTitle")
+    : t("stepOf", currentStep + 1, steps.length);
+  document.getElementById("progressWrap").style.display = isReview ? "none" : "";
+
+  if (isReview) { renderReview(); return; }
+
+  const s = steps[currentStep];
+  const val = data[s.k] ?? "";
+
+  const wizard = document.getElementById("wizard");
+  wizard.innerHTML = "";
+
+  const card = document.createElement("div");
+  card.className = "step-card active";
+
+  let inner = `
+    <div class="step-icon">${s.ic}</div>
+    <div class="step-label">${s.label}</div>
+    <div class="step-q">${s.q}</div>
+    ${s.hint ? `<div class="step-hint">${s.hint}</div>` : ""}
+  `;
+
+  if (s.type === "text") {
+    inner += `
+      <input class="field" id="mainField" type="text" placeholder="${s.ph ?? ""}" value="${escHtml(val)}" />
+      <div class="field-error" id="fieldErr"></div>
+    `;
+    if (s.optional) {
+      inner += `<div style="margin-top:10px;"><button class="opt-btn" style="width:100%;text-align:center;color:var(--muted);" onclick="skipField()">${t("naBtn")}</button></div>`;
+    }
+    inner += `<div class="nav">
+      ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
+      <button class="btn-next" onclick="goNext()">${t("next")}</button>
+    </div>`;
+  } else if (s.type === "opts") {
+    const cols = s.opts.length <= 3 ? "single" : "";
+    inner += `<div class="opts-grid ${cols}" id="optsGrid">`;
+    s.opts.forEach(o => {
+      const sel = val === o ? "selected" : "";
+      inner += `<button class="opt-btn ${sel}" onclick="selectOpt(this,'${escHtml(o)}')">${o}</button>`;
+    });
+    inner += `</div>`;
+    if (s.optional) inner += `<button class="opt-btn" style="width:100%;margin-top:10px;text-align:center;color:var(--muted);" onclick="skipField()">${t("naBtn")}</button>`;
+    inner += `<div class="nav">
+      ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
+      <button class="btn-next" id="nextBtn" ${!val?'disabled':''} onclick="goNext()">${t("next")}</button>
+    </div>`;
+  } else if (s.type === "multi") {
+    const selected = val ? val.split(", ").filter(Boolean) : [];
+    inner += `<div class="opts-grid" id="optsGrid">`;
+    s.opts.forEach(o => {
+      const sel = selected.includes(o) ? "selected" : "";
+      inner += `<button class="opt-btn ${sel}" onclick="toggleMulti(this,'${escHtml(o)}')">${o}</button>`;
+    });
+    inner += `</div>`;
+    inner += `<button class="multi-done ${selected.length>0?'show':''}" id="doneBtn" onclick="goNext()">${t("doneBtn")}</button>`;
+    inner += `<div class="nav">
+      ${currentStep > 0 ? `<button class="btn-back" onclick="goBack()">${t("back")}</button>` : ""}
+    </div>`;
+  }
+
+  card.innerHTML = inner;
+  wizard.appendChild(card);
+
+  // Focus text input
+  if (s.type === "text") {
+    setTimeout(() => document.getElementById("mainField")?.focus(), 100);
+    document.getElementById("mainField")?.addEventListener("keydown", e => { if(e.key==="Enter") goNext(); });
+  }
+}
+
+function renderReview() {
+  const steps = getSteps();
+  const wizard = document.getElementById("wizard");
+  wizard.innerHTML = "";
+  const card = document.createElement("div");
+  card.className = "step-card active";
+
+  const sections = [
+    { title: TR.en.reviewSections.personal, keys: ["agency","name","dob","nationality","country","city","phone","email"] },
+    { title: TR.en.reviewSections.job,      keys: ["jobType","workArrange","availability","salary","experience"] },
+    { title: TR.en.reviewSections.experience, keys: ["job1Title","job1Company","job1Dates","job2Title","job2Company","job2Dates","job3Title","job3Company","job3Dates"] },
+    { title: TR.en.reviewSections.skills,   keys: ["skills","certs","education","languages"] },
+  ];
+
+  let html = `
+    <div class="step-icon">📋</div>
+    <div class="step-q">${t("reviewTitle")}</div>
+    <div class="step-hint">${t("reviewHint")} ${t("editHint")}</div>
+  `;
+
+  sections.forEach(sec => {
+    const rows = sec.keys.map(k => {
+      const s = steps.find(x=>x.k===k);
+      if (!s) return "";
+      const v = data[k];
+      if (!v && s.optional) return "";
+      return `<div class="review-row" onclick="editField('${k}')">
+        <span class="review-ic">${s.ic}</span>
+        <span class="review-lb">${s.label}</span>
+        <span class="review-val">${escHtml(v||"—")}</span>
+        <span class="review-edit">Edit</span>
+      </div>`;
+    }).join("");
+    if (!rows.trim()) return;
+    html += `<div class="review-section">
+      <div class="review-section-title">${sec.title}</div>
+      ${rows}
+    </div>`;
+  });
+
+  html += `<button class="btn-submit" onclick="submitResume()">${t("submit")}</button>`;
+  html += `<div class="nav"><button class="btn-back" onclick="goBack()">${t("back")}</button></div>`;
+
+  card.innerHTML = html;
+  wizard.appendChild(card);
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+function selectOpt(btn, val) {
+  btn.closest(".opts-grid").querySelectorAll(".opt-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  const s = getSteps()[currentStep];
+  data[s.k] = val;
+  const nb = document.getElementById("nextBtn");
+  if (nb) nb.disabled = false;
+}
+
+function toggleMulti(btn, val) {
+  btn.classList.toggle("selected");
+  const s = getSteps()[currentStep];
+  const selected = Array.from(btn.closest(".opts-grid").querySelectorAll(".opt-btn.selected")).map(b => b.textContent.trim());
+  data[s.k] = selected.join(", ");
+  const db = document.getElementById("doneBtn");
+  if (db) { db.classList.toggle("show", selected.length > 0); }
+}
+
+function skipField() {
+  const s = getSteps()[currentStep];
+  data[s.k] = "";
+  advance();
+}
+
+function goNext() {
+  const steps = getSteps();
+  if (currentStep >= steps.length) return;
+  const s = steps[currentStep];
+
+  if (s.type === "text") {
+    const field = document.getElementById("mainField");
+    const val = field?.value.trim() ?? "";
+    const errEl = document.getElementById("fieldErr");
+
+    if (!val && !s.optional) { showErr(errEl, t("errRequired")); return; }
+    if (val && s.validate) {
+      const err = validateField(s.validate, val);
+      if (err) { showErr(errEl, err); return; }
+    }
+    data[s.k] = val;
+  } else if (s.type === "multi") {
+    if (!data[s.k] || !data[s.k].trim()) return;
+  } else if (s.type === "opts") {
+    if (!data[s.k]) return;
+  }
+
+  if (editingKey) { editingKey = null; currentStep = steps.length; render(); return; }
+  advance();
+}
+
+function advance() {
+  const steps = getSteps();
+  currentStep++;
+  // Skip job2/job3 company+dates if title is blank
+  while (currentStep < steps.length) {
+    const s = steps[currentStep];
+    if (s.k === "job2Company" || s.k === "job2Dates") {
+      if (!data["job2Title"]) { currentStep++; continue; }
+    }
+    if (s.k === "job3Title" && !data["job2Title"]) { currentStep++; continue; }
+    if (s.k === "job3Company" || s.k === "job3Dates") {
+      if (!data["job3Title"]) { currentStep++; continue; }
+    }
+    break;
+  }
+  render();
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  if (editingKey) { editingKey = null; currentStep = getSteps().length; render(); return; }
+  if (currentStep > 0) { currentStep--; render(); window.scrollTo(0,0); }
+}
+
+function editField(key) {
+  const steps = getSteps();
+  const idx = steps.findIndex(s => s.k === key);
+  if (idx < 0) return;
+  editingKey = key;
+  currentStep = idx;
+  render();
+  window.scrollTo(0,0);
+}
+
+function showErr(el, msg) {
+  el.textContent = msg;
+  el.classList.add("show");
+  document.querySelector(".field")?.classList.add("error");
+}
+
+function changeLang(l) {
+  lang = l;
+  render();
+}
+
+// ── Submit ─────────────────────────────────────────────────────────────────────
+async function submitResume() {
+  const btn = document.querySelector(".btn-submit");
+  if (btn) btn.disabled = true;
+
+  const loadingEl = document.getElementById("loading");
+  const loadingMsg = document.getElementById("loadingMsg");
+  loadingMsg.textContent = t("submitting");
+  loadingEl.classList.add("show");
+
+  try {
+    const res = await fetch("/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data, lang }),
+    });
+    const json = await res.json();
+    loadingEl.classList.remove("show");
+    if (json.ok) {
+      showSuccess();
+    } else {
+      alert("Submission failed: " + (json.error || "Unknown error"));
+      if (btn) btn.disabled = false;
+    }
+  } catch(err) {
+    loadingEl.classList.remove("show");
+    alert("Network error. Please try again.");
+    if (btn) btn.disabled = false;
+  }
+}
+
+function showSuccess() {
+  document.getElementById("progressWrap").style.display = "none";
+  const wizard = document.getElementById("wizard");
+  wizard.innerHTML = "";
+  const card = document.createElement("div");
+  card.className = "step-card active";
+  card.innerHTML = `
+    <div class="success-screen">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">${t("successTitle", data.name?.split(" ")[0] || "")}</div>
+      <div class="success-msg">${t("successMsg", data.agency || "the agency").replace(/\n/g,"<br>")}</div>
+    </div>
+  `;
+  wizard.appendChild(card);
+}
+
+function escHtml(str) {
+  return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
