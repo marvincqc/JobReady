@@ -1,0 +1,7 @@
+node_modules/
+resume_output/
+.claude/
+.DS_Store
+.env
+.env.*
+*.log

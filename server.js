@@ -1,121 +1,161 @@
 "use strict";
 
+const fs = require("fs");
+const fsp = fs.promises;
 const express = require("express");
-const path = require("path");
-const multer = require("multer");
-const { createWorker } = require("tesseract.js");
-const sharp = require("sharp");
-const MRZ = require("mrz");
-const { createClient } = require("@supabase/supabase-js");
+const path    = require("path");
+const os = require("os");
+const { Readable } = require("stream");
+const { pipeline } = require("stream/promises");
+require("dotenv").config();
 
 const { generateAndStorePDF } = require("./src/pdf");
 
 const app = express();
+const rootDir = __dirname;
+const resumeOutputDir = path.join(rootDir, "resume_output");
 
-// Supabase client (uses env vars)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+app.use("/resume_output", express.static(resumeOutputDir));
+app.use(express.static(path.join(rootDir, "public")));
+app.use(express.json({ limit: "50mb" }));
 
-// Multer config
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+function sanitizeTempSegment(value, fallback = "attachment") {
+  const cleaned = String(value ?? "")
+    .trim()
+    .replace(/[\/\\?%*:|"<>]/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .toLowerCase();
 
-// Serve static files from public folder
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json({ limit: "10mb" }));
+  return cleaned || fallback;
+}
 
-// Health check
+function cleanupTempDir(dir) {
+  if (!dir) return Promise.resolve();
+  return fsp.rm(dir, { recursive: true, force: true }).catch(() => {});
+}
+
+async function writeUploadedFile(file, tempPath) {
+  const source = typeof file?.stream === "function" ? Readable.fromWeb(file.stream()) : null;
+  if (!source) {
+    throw new Error("Unsupported uploaded file payload.");
+  }
+
+  await pipeline(source, fs.createWriteStream(tempPath));
+}
+
+async function readMultipartSubmission(req) {
+  const tempDir = await fsp.mkdtemp(path.join(os.tmpdir(), "jobready-upload-"));
+  try {
+    const request = new Request(new URL(req.originalUrl || req.url, "http://127.0.0.1").toString(), {
+      method: req.method,
+      headers: req.headers,
+      body: req,
+      duplex: "half",
+    });
+
+    const formData = await request.formData();
+    const payloadRaw = formData.get("payload");
+    if (typeof payloadRaw !== "string" || !payloadRaw.trim()) {
+      const err = new Error("Missing submission payload.");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(payloadRaw);
+    } catch {
+      const err = new Error("Invalid submission payload.");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const attachmentFiles = formData.getAll("attachments");
+    const attachments = [];
+    for (const file of attachmentFiles) {
+      if (!file || typeof file.stream !== "function") continue;
+
+      const baseName = path.basename(file.name || "attachment", path.extname(file.name || ""));
+      const safeStem = sanitizeTempSegment(baseName, "attachment");
+      const ext = path.extname(file.name || "").toLowerCase();
+      const tempPath = path.join(
+        tempDir,
+        `${String(attachments.length + 1).padStart(2, "0")}_${safeStem}${ext || ""}`
+      );
+
+      await writeUploadedFile(file, tempPath);
+      attachments.push({
+        name: file.name || "attachment",
+        type: file.type || "application/octet-stream",
+        size: file.size || 0,
+        tempPath,
+      });
+    }
+
+    return {
+      data: payload.data,
+      lang: payload.lang,
+      attachments,
+      cleanupDir: tempDir,
+    };
+  } catch (err) {
+    await cleanupTempDir(tempDir);
+    throw err;
+  }
+}
+
+async function readSubmissionInput(req) {
+  const contentType = String(req.headers["content-type"] || "");
+  if (contentType.includes("multipart/form-data")) {
+    return readMultipartSubmission(req);
+  }
+
+  const body = req.body ?? {};
+  return {
+    data: body.data,
+    lang: body.lang,
+    attachments: Array.isArray(body.attachments) ? body.attachments : [],
+    cleanupDir: null,
+  };
+}
+
+// ─── Health check (used by cron keepalive) ────────────────────────────────────
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
-// Privacy policy
-app.get("/privacy", (_req, res) =>
-  res.sendFile(path.join(__dirname, "public", "privacy.html"))
-);
+// ─── Main app + privacy page ─────────────────────────────────────────────────
+app.get("/", (_req, res) => res.sendFile(path.join(rootDir, "public", "index.html")));
 
-// OCR endpoint with storage
-app.post("/ocr-passport", upload.single("image"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ ok: false, error: "No image uploaded" });
-    }
+// ─── Privacy policy ───────────────────────────────────────────────────────────
+app.get("/privacy", (_req, res) => res.sendFile(path.join(rootDir, "public", "privacy.html")));
 
-    // Preprocess image
-    const processedBuffer = await sharp(req.file.buffer)
-      .resize(1500, null, { withoutEnlargement: true })
-      .grayscale()
-      .normalize()
-      .toBuffer();
-
-    // Run Tesseract
-    const worker = await createWorker("eng");
-    const { data: { text } } = await worker.recognize(processedBuffer);
-    await worker.terminate();
-
-    // Parse MRZ
-    const result = MRZ.parse(text);
-    if (!result.valid) {
-      return res.status(400).json({ ok: false, error: "Could not read MRZ. Please try a clearer photo." });
-    }
-
-    const fields = result.fields;
-    const extracted = {
-      name: `${fields.surname || ""} ${fields.givenNames || ""}`.trim(),
-      dob: fields.birthDate || "",
-      nationality: fields.nationality || "",
-      passportNumber: fields.documentNumber || "",
-    };
-
-    // Upload the original image to Supabase Storage
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8);
-    const fileName = `passport_${timestamp}_${random}.jpg`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("PassportPhotos")
-      .upload(fileName, req.file.buffer, { contentType: "image/jpeg", upsert: false });
-
-    if (uploadError) {
-      console.error("Storage upload error:", uploadError);
-      // Continue without photo URL – OCR data still returned
-    }
-
-    let photoUrl = null;
-    if (!uploadError) {
-      const { data: signedUrlData, error: urlError } = await supabase.storage
-        .from("PassportPhotos")
-        .createSignedUrl(fileName, 60 * 60 * 24 * 365); // 1 year
-      if (!urlError) {
-        photoUrl = signedUrlData.signedUrl;
-      }
-    }
-
-    res.json({ ok: true, data: extracted, photoUrl });
-  } catch (err) {
-    console.error("OCR error:", err);
-    res.status(500).json({ ok: false, error: "OCR processing failed" });
-  }
-});
-
-// Web wizard submit
+// ─── Web wizard submit ────────────────────────────────────────────────────────
 app.post("/submit", async (req, res) => {
-  const { data } = req.body;
-  
-  if (!data) {
-    return res.status(400).json({ ok: false, error: "No data provided" });
-  }
-
+  let cleanupDir = null;
   try {
+    const submission = await readSubmissionInput(req);
+    const { data, attachments } = submission;
+    cleanupDir = submission.cleanupDir;
+    if (!data || typeof data !== "object") {
+      return res.status(400).json({ ok: false, error: "No data provided" });
+    }
+
     const submissionId = "web-" + Date.now();
-    const pdfUrl = await generateAndStorePDF(data, submissionId);
-    console.log(`✅ Submission: ${data.name || "Anonymous"} → ${data.agency || "No agency"}`);
-    res.json({ ok: true, pdfUrl });
+    const safeAttachments = Array.isArray(attachments) ? attachments : [];
+    const result = await generateAndStorePDF(data, submissionId, safeAttachments);
+    console.log(`✅ Submission: ${data.name} → ${data.agency} (${safeAttachments.length} attachment(s))`);
+    res.json({ ok: true, ...result });
   } catch (err) {
-    console.error("❌ Submit error:", err.message);
-    res.status(500).json({ ok: false, error: err.message });
+    console.error("Submit error:", err.message);
+    res.status(err.statusCode || 500).json({ ok: false, error: err.message });
+  } finally {
+    if (cleanupDir) {
+      await cleanupTempDir(cleanupDir);
+    }
   }
 });
 
-// Start server
+// ─── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 StartJobReady listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 JobReady listening on port ${PORT}`));
