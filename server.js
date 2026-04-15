@@ -18,7 +18,7 @@ const resumeOutputDir = path.join(rootDir, "resume_output");
 const appName = "JobReady";
 
 app.use("/resume_output", express.static(resumeOutputDir));
-app.use(express.static(path.join(rootDir, "public")));
+app.use(express.static(path.join(rootDir, "public"), { index: false }));
 app.use(express.json({ limit: "50mb" }));
 
 function getDeploymentMeta() {
@@ -138,8 +138,9 @@ async function readSubmissionInput(req) {
 // ─── Health check (used by cron keepalive) ────────────────────────────────────
 app.get("/health", (_req, res) => res.json({ status: "ok", ...getDeploymentMeta() }));
 
-// ─── Main app + privacy page ─────────────────────────────────────────────────
-app.get("/", (_req, res) => res.sendFile(path.join(rootDir, "public", "index.html")));
+// ─── Main pages ───────────────────────────────────────────────────────────────
+app.get("/", (_req, res) => res.sendFile(path.join(rootDir, "public", "home.html")));
+app.get("/resume", (_req, res) => res.sendFile(path.join(rootDir, "public", "index.html")));
 
 // ─── Privacy policy ───────────────────────────────────────────────────────────
 app.get("/privacy", (_req, res) => res.sendFile(path.join(rootDir, "public", "privacy.html")));

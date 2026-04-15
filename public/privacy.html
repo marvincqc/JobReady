@@ -37,7 +37,15 @@
     padding: 28px 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 14px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: inherit;
+    text-decoration: none;
   }
   .logo-mark {
     width: 38px; height: 38px;
@@ -49,6 +57,43 @@
   }
   .logo-text { font-weight: 500; font-size: 17px; letter-spacing: -0.3px; }
   .logo-text span { color: var(--accent); }
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.15s ease;
+  }
+  .nav-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+  .nav-link.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
+  }
+  .nav-link.reset {
+    background: #fff6ef;
+    border-color: #f1c9aa;
+    color: #b45309;
+  }
 
   /* ── Hero ── */
   .hero {
@@ -177,6 +222,8 @@
     header, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
     .hero { padding-top: 40px; padding-bottom: 32px; }
     main { padding-top: 40px; padding-bottom: 60px; }
+    .header-inner { align-items: flex-start; flex-direction: column; }
+    .header-nav, .nav-link { width: 100%; }
   }
 </style>
 </head>
@@ -184,8 +231,15 @@
 
 <header>
   <div class="header-inner">
-    <div class="logo-mark">📋</div>
-    <div class="logo-text">Job<span>Ready</span></div>
+    <a class="brand" href="/">
+      <div class="logo-mark">📋</div>
+      <div class="logo-text">Job<span>Ready</span></div>
+    </a>
+    <nav class="header-nav">
+      <a class="nav-link primary" href="/resume">Resume Builder</a>
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link reset" href="/?reset=1">Reset</a>
+    </nav>
   </div>
 </header>
 
