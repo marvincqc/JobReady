@@ -4,41 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy — JobReady</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #0f1419;
-    --muted: #556170;
-    --accent: #1a6b4a;
-    --accent-light: #e8f5ef;
-    --line: #dde3e8;
-    --bg: #fafaf8;
+    --bg: #f4efe6;
+    --card: rgba(255, 255, 255, 0.84);
+    --ink: #15202b;
+    --muted: #556475;
+    --line: rgba(21, 32, 43, 0.12);
+    --brand: #be4f2f;
+    --brand-dark: #963918;
+    --brand-soft: #fff0e3;
+    --accent: #1f5f58;
+    --accent-soft: #e7f3f1;
+    --shadow: 0 24px 60px rgba(30, 35, 40, 0.14);
     --white: #ffffff;
+    --radius-lg: 28px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--ink);
     line-height: 1.7;
     font-size: 16px;
+    background:
+      radial-gradient(circle at top left, rgba(190, 79, 47, 0.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(31, 95, 88, 0.12), transparent 24%),
+      linear-gradient(180deg, #f8f2ea 0%, #efe8dc 100%);
+  }
+
+  .shell {
+    width: min(1040px, calc(100% - 32px));
+    margin: 0 auto;
   }
 
   /* ── Header ── */
   header {
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    padding: 0 40px;
+    padding: 24px 0 0;
   }
   .header-inner {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 28px 0;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.76);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
   }
   .brand {
     display: flex;
@@ -48,15 +63,17 @@
     text-decoration: none;
   }
   .logo-mark {
-    width: 38px; height: 38px;
-    background: var(--accent);
-    border-radius: 10px;
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--brand) 0%, #db7a49 100%);
+    border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
     flex-shrink: 0;
+    box-shadow: 0 14px 30px rgba(190, 79, 47, 0.24);
   }
-  .logo-text { font-weight: 500; font-size: 17px; letter-spacing: -0.3px; }
-  .logo-text span { color: var(--accent); }
+  .logo-text { font-weight: 800; font-size: 18px; letter-spacing: -0.03em; }
   .header-nav {
     display: flex;
     align-items: center;
@@ -68,58 +85,74 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    padding: 0 14px;
+    min-height: 42px;
+    padding: 0 16px;
     border-radius: 999px;
     border: 1px solid var(--line);
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.82);
     color: var(--ink);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     text-decoration: none;
-    transition: 0.15s ease;
+    transition: 0.18s ease;
   }
   .nav-link:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-light);
+    transform: translateY(-1px);
+    border-color: rgba(21, 32, 43, 0.22);
   }
   .nav-link.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--white);
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
   }
   .nav-link.reset {
-    background: #fff6ef;
-    border-color: #f1c9aa;
-    color: #b45309;
+    background: var(--brand-soft);
+    border-color: rgba(190, 79, 47, 0.22);
+    color: var(--brand-dark);
   }
 
   /* ── Hero ── */
   .hero {
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    padding: 60px 40px 48px;
+    padding: 18px 0 20px;
   }
-  .hero-inner { max-width: 760px; margin: 0 auto; }
+  .hero-inner {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.78));
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-lg);
+    padding: 34px;
+  }
+  .hero-inner::before {
+    content: "";
+    position: absolute;
+    inset: auto -50px -90px auto;
+    width: 240px;
+    height: 240px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(190, 79, 47, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
   .eyebrow {
     display: inline-block;
-    background: var(--accent-light);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.2px;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 4px;
+    padding: 8px 12px;
+    border-radius: 999px;
     margin-bottom: 20px;
   }
   h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(32px, 5vw, 46px);
-    line-height: 1.15;
-    letter-spacing: -0.5px;
-    margin-bottom: 16px;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    margin-bottom: 18px;
+    max-width: 12ch;
   }
   .hero-meta {
     color: var(--muted);
@@ -131,15 +164,25 @@
   .hero-meta span { display: flex; align-items: center; gap: 6px; }
 
   /* ── Content ── */
-  main { padding: 64px 40px 100px; }
-  .content { max-width: 760px; margin: 0 auto; }
+  main { padding: 0 0 52px; }
+  .content {
+    display: grid;
+    gap: 18px;
+  }
 
-  section { margin-bottom: 52px; }
+  section {
+    margin-bottom: 0;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.74));
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
 
   h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    letter-spacing: -0.2px;
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    letter-spacing: -0.03em;
     margin-bottom: 14px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--line);
@@ -152,16 +195,16 @@
     align-items: center;
     justify-content: center;
     width: 26px; height: 26px;
-    background: var(--accent-light);
+    background: var(--accent-soft);
     color: var(--accent);
     border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     flex-shrink: 0;
   }
 
-  p { color: #2d3748; margin-bottom: 14px; font-size: 15.5px; }
+  p { color: #2d3748; margin-bottom: 14px; font-size: 15.5px; line-height: 1.8; }
   p:last-child { margin-bottom: 0; }
 
   ul {
@@ -183,79 +226,82 @@
     left: 0; top: 16px;
     width: 6px; height: 6px;
     border-radius: 50%;
-    background: var(--accent);
+    background: var(--brand);
   }
 
   /* ── Info box ── */
   .info-box {
-    background: var(--accent-light);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    padding: 16px 20px;
-    margin: 20px 0;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.74));
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+    margin: 0;
     font-size: 15px;
-    color: #1a4a35;
+    color: var(--ink);
   }
 
   /* ── Contact card ── */
   .contact-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.78);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 24px 28px;
     margin-top: 12px;
   }
   .contact-card p { margin: 4px 0; font-size: 15px; }
-  .contact-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 500; margin-bottom: 10px; }
+  .contact-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 800; margin-bottom: 10px; }
 
   /* ── Footer ── */
   footer {
-    background: var(--ink);
-    color: rgba(255,255,255,0.5);
-    padding: 32px 40px;
+    color: var(--muted);
+    padding: 0 0 34px;
     text-align: center;
     font-size: 13px;
   }
-  footer strong { color: rgba(255,255,255,0.8); }
+  footer strong { color: var(--ink); }
 
   @media (max-width: 600px) {
-    header, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
-    .hero { padding-top: 40px; padding-bottom: 32px; }
-    main { padding-top: 40px; padding-bottom: 60px; }
+    .shell { width: min(100% - 24px, 1040px); }
     .header-inner { align-items: flex-start; flex-direction: column; }
     .header-nav, .nav-link { width: 100%; }
+    .hero-inner,
+    section,
+    .info-box {
+      padding: 22px;
+    }
   }
 </style>
 </head>
 <body>
+<div class="shell">
+  <header>
+    <div class="header-inner">
+      <a class="brand" href="/">
+        <div class="logo-mark">JR</div>
+        <div class="logo-text">JobReady</div>
+      </a>
+      <nav class="header-nav">
+        <a class="nav-link primary" href="/resume">Resume Builder</a>
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link reset" href="/?reset=1">Reset</a>
+      </nav>
+    </div>
+  </header>
 
-<header>
-  <div class="header-inner">
-    <a class="brand" href="/">
-      <div class="logo-mark">📋</div>
-      <div class="logo-text">Job<span>Ready</span></div>
-    </a>
-    <nav class="header-nav">
-      <a class="nav-link primary" href="/resume">Resume Builder</a>
-      <a class="nav-link" href="/">Home</a>
-      <a class="nav-link reset" href="/?reset=1">Reset</a>
-    </nav>
-  </div>
-</header>
-
-<div class="hero">
-  <div class="hero-inner">
-    <div class="eyebrow">Legal</div>
-    <h1>Privacy Policy</h1>
-    <div class="hero-meta">
-      <span>📅 Effective: January 1, 2025</span>
-      <span>🔄 Last updated: March 2026</span>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Legal</div>
+      <h1>Privacy Policy</h1>
+      <div class="hero-meta">
+        <span>📅 Effective: January 1, 2025</span>
+        <span>🔄 Last updated: March 2026</span>
+      </div>
     </div>
   </div>
-</div>
 
-<main>
-  <div class="content">
+  <main>
+    <div class="content">
 
     <div class="info-box">
       JobReady is a web-based resume builder that helps foreign workers create resumes for job applications in Singapore. This policy explains how we handle your information.
@@ -344,12 +390,13 @@
       <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated date. Continued use of JobReady after changes constitutes acceptance of the updated policy.</p>
     </section>
 
-  </div>
-</main>
+    </div>
+  </main>
 
-<footer>
-  <strong>JobReady</strong> &nbsp;·&nbsp; Privacy Policy &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; Singapore
-</footer>
+  <footer>
+    <strong>JobReady</strong> &nbsp;·&nbsp; Privacy Policy &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; Singapore
+  </footer>
+</div>
 
 </body>
 </html>

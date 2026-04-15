@@ -4,71 +4,93 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JobReady — Resume Builder</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f0f4f8;
-  --card: #ffffff;
-  --accent: #2563eb;
-  --accent-dark: #1d4ed8;
-  --accent-light: #eff6ff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --success: #16a34a;
-  --success-light: #f0fdf4;
-  --error: #dc2626;
-  --error-light: #fef2f2;
-  --radius: 14px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --bg: #f4efe6;
+  --bg-accent: #fce8d2;
+  --card: rgba(255, 255, 255, 0.84);
+  --card-strong: rgba(255, 255, 255, 0.92);
+  --accent: #be4f2f;
+  --accent-dark: #963918;
+  --accent-light: #fff0e3;
+  --ink: #15202b;
+  --text: #15202b;
+  --muted: #556475;
+  --border: rgba(21, 32, 43, 0.12);
+  --success: #1f5f58;
+  --success-light: #e7f3f1;
+  --error: #c2410c;
+  --error-light: #fff1eb;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --shadow: 0 24px 60px rgba(30, 35, 40, 0.14);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background:
+    radial-gradient(circle at top left, rgba(190, 79, 47, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(31, 95, 88, 0.12), transparent 24%),
+    linear-gradient(180deg, #f8f2ea 0%, #efe8dc 100%);
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
 }
 
 /* ── Header ── */
 .header {
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  gap: 16px;
+  margin-top: 24px;
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: inherit;
   text-decoration: none;
 }
 .logo-icon {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent) 0%, #db7a49 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 14px 30px rgba(190, 79, 47, 0.24);
 }
-.logo-name { font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+.logo-name { font-weight: 800; font-size: 18px; letter-spacing: -0.03em; }
 .lang-select {
-  background: var(--bg);
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 12px;
+  border-radius: 999px;
+  padding: 0 14px;
+  min-height: 42px;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
   outline: none;
@@ -84,43 +106,43 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 35px;
-  padding: 0 12px;
-  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.82);
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.15s;
+  transition: all 0.18s ease;
 }
 .page-link:hover {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--accent);
+  transform: translateY(-1px);
+  border-color: rgba(21, 32, 43, 0.22);
 }
 .page-link.reset-link {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #c2410c;
+  background: var(--accent-light);
+  border-color: rgba(190, 79, 47, 0.22);
+  color: var(--accent-dark);
 }
 .import-btn {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 12px;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 0 16px;
+  min-height: 42px;
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s ease;
 }
 .import-btn:hover {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--accent);
+  background: #263240;
+  border-color: #263240;
+  transform: translateY(-1px);
 }
 .import-btn:disabled {
   opacity: 0.6;
@@ -129,9 +151,13 @@ body {
 
 /* ── Progress ── */
 .progress-wrap {
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 14px 18px;
+  margin: 14px 0 14px;
 }
 .progress-info {
   display: flex;
@@ -139,11 +165,11 @@ body {
   font-size: 12px;
   color: var(--muted);
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .progress-bar {
-  height: 4px;
-  background: var(--border);
+  height: 8px;
+  background: rgba(21, 32, 43, 0.08);
   border-radius: 99px;
   overflow: hidden;
 }
@@ -155,26 +181,26 @@ body {
 }
 .ocr-status {
   display: none;
-  max-width: 540px;
   margin: 0 auto 12px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid #f0d59a;
-  background: #fff7e6;
-  color: #7c4a00;
-  font-size: 13px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(190, 79, 47, 0.18);
+  background: rgba(255, 240, 227, 0.92);
+  color: var(--accent-dark);
+  font-size: 14px;
   line-height: 1.5;
+  box-shadow: 0 18px 40px rgba(30, 35, 40, 0.08);
 }
 .ocr-status.show { display: block; }
 .ocr-status.error {
-  border-color: #f7b2b2;
-  background: #fff1f1;
-  color: #9f1239;
+  border-color: rgba(194, 65, 12, 0.18);
+  background: rgba(255, 241, 235, 0.94);
+  color: var(--error);
 }
 .ocr-status.success {
-  border-color: #b7e4c7;
-  background: #f0fff4;
-  color: #166534;
+  border-color: rgba(31, 95, 88, 0.18);
+  background: rgba(231, 243, 241, 0.94);
+  color: var(--success);
 }
 
 /* ── Main ── */
@@ -183,22 +209,35 @@ main {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 32px 16px 80px;
+  padding: 6px 0 80px;
 }
 
 .wizard {
   width: 100%;
-  max-width: 540px;
+  max-width: 720px;
 }
 
 /* ── Step card ── */
 .step-card {
-  background: var(--card);
-  border-radius: var(--radius);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 36px 32px;
+  padding: 38px 36px;
   animation: fadeUp 0.3s ease;
   display: none;
+  position: relative;
+  overflow: hidden;
+}
+.step-card::before {
+  content: "";
+  position: absolute;
+  inset: auto -50px -90px auto;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(190, 79, 47, 0.12) 0%, transparent 70%);
+  pointer-events: none;
 }
 .step-card.active { display: block; }
 
@@ -208,51 +247,59 @@ main {
 }
 
 .step-icon {
-  width: 52px; height: 52px;
+  width: 58px;
+  height: 58px;
   background: var(--accent-light);
-  border-radius: 14px;
+  border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
   font-size: 24px;
   margin-bottom: 20px;
+  border: 1px solid rgba(190, 79, 47, 0.14);
 }
 .step-label {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
+  font-weight: 800;
+  color: var(--accent-dark);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.12em;
   margin-bottom: 6px;
 }
 .step-q {
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.3px;
-  margin-bottom: 8px;
+  font-family: "Fraunces", serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+  max-width: 16ch;
 }
 .step-hint {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   margin-bottom: 24px;
-  line-height: 1.5;
+  line-height: 1.75;
+  max-width: 56ch;
 }
 
 /* ── Input ── */
 .field {
   width: 100%;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 16px;
+  border-radius: 18px;
+  padding: 15px 18px;
   font-family: inherit;
   font-size: 15px;
   color: var(--text);
   outline: none;
   transition: border-color 0.15s;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
 }
-.field:focus { border-color: var(--accent); }
+.field:focus {
+  border-color: rgba(190, 79, 47, 0.36);
+  box-shadow: 0 0 0 4px rgba(190, 79, 47, 0.08);
+}
 .field.error { border-color: var(--error); background: var(--error-light); }
-.field:disabled { opacity: 0.65; cursor: not-allowed; background: #f8fafc; }
+.field:disabled { opacity: 0.65; cursor: not-allowed; background: rgba(21, 32, 43, 0.04); }
 .field-error {
   font-size: 12px;
   color: var(--error);
@@ -263,16 +310,16 @@ main {
 .field-error.show { display: block; }
 .upload-zone {
   border: 1.5px dashed var(--border);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.78) 100%);
+  padding: 24px;
   transition: all 0.15s ease;
   cursor: pointer;
 }
 .upload-zone:hover,
 .upload-zone.dragover {
-  border-color: var(--accent);
-  background: var(--accent-light);
+  border-color: rgba(190, 79, 47, 0.3);
+  background: rgba(255, 240, 227, 0.9);
 }
 .upload-zone-head {
   display: flex;
@@ -283,11 +330,11 @@ main {
 .upload-zone-ic {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid var(--border);
   flex-shrink: 0;
   font-size: 20px;
@@ -311,19 +358,19 @@ main {
 }
 .upload-zone-btn {
   border: 1px solid var(--border);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 999px;
+  padding: 11px 16px;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
 }
 .upload-zone-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: #fff;
+  border-color: rgba(190, 79, 47, 0.3);
+  color: var(--accent-dark);
+  background: var(--accent-light);
 }
 .upload-note {
   margin-top: 12px;
@@ -342,8 +389,8 @@ main {
   gap: 12px;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fff;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
 }
 .attachment-meta {
   min-width: 0;
@@ -409,20 +456,24 @@ main {
 .opts-grid.single { grid-template-columns: 1fr; }
 
 .opt-btn {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.88);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: 18px;
+  padding: 14px 16px;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
   text-align: left;
   transition: all 0.15s;
   line-height: 1.3;
 }
-.opt-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.opt-btn:hover {
+  border-color: rgba(190, 79, 47, 0.28);
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
 .opt-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
 
 /* ── Multi-select done btn ── */
@@ -432,11 +483,11 @@ main {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  padding: 13px;
+  border-radius: 18px;
+  padding: 15px;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   transition: background 0.15s;
   display: none;
@@ -452,13 +503,13 @@ main {
 }
 .btn-back {
   flex: 0 0 auto;
-  background: var(--bg);
+  background: rgba(255, 255, 255, 0.86);
   border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 20px;
+  border-radius: 18px;
+  padding: 15px 20px;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--muted);
   cursor: pointer;
   transition: all 0.15s;
@@ -468,11 +519,11 @@ main {
   flex: 1;
   background: var(--accent);
   border: none;
-  border-radius: 10px;
-  padding: 13px;
+  border-radius: 18px;
+  padding: 15px;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 800;
   color: #fff;
   cursor: pointer;
   transition: background 0.15s;
@@ -484,10 +535,10 @@ main {
 .review-section { margin-bottom: 20px; }
 .review-section-title {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.12em;
   margin-bottom: 8px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
@@ -496,14 +547,13 @@ main {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--bg);
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(21, 32, 43, 0.05);
   cursor: pointer;
-  border-radius: 6px;
-  padding-left: 4px;
+  border-radius: 16px;
   transition: background 0.1s;
 }
-.review-row:hover { background: var(--bg); }
+.review-row:hover { background: rgba(255, 240, 227, 0.7); }
 .review-row:last-child { border-bottom: none; }
 .review-ic { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 .review-lb { font-size: 11px; color: var(--muted); font-weight: 500; min-width: 90px; margin-top: 2px; }
@@ -515,17 +565,17 @@ main {
   width: 100%;
   background: var(--success);
   border: none;
-  border-radius: 10px;
-  padding: 15px;
+  border-radius: 18px;
+  padding: 16px;
   font-family: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
   cursor: pointer;
   margin-top: 24px;
   transition: background 0.15s;
 }
-.btn-submit:hover { background: #15803d; }
+.btn-submit:hover { background: #184f49; }
 .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
 /* ── Success screen ── */
@@ -539,15 +589,16 @@ main {
   display: block;
 }
 .success-title {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-family: "Fraunces", serif;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
   margin-bottom: 12px;
 }
 .success-msg {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.75;
 }
 .success-links {
   display: grid;
@@ -558,29 +609,29 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 13px 16px;
+  border-radius: 18px;
   background: var(--accent);
   color: #fff;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
 }
 .success-link.secondary {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.88);
   color: var(--text);
   border: 1px solid var(--border);
 }
 .success-link:hover { background: var(--accent-dark); }
-.success-link.secondary:hover { background: var(--bg); }
+.success-link.secondary:hover { background: var(--accent-light); }
 
 /* ── Loading overlay ── */
 .loading {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(244, 239, 230, 0.76);
+  backdrop-filter: blur(8px);
   z-index: 200;
   align-items: center;
   justify-content: center;
@@ -590,7 +641,7 @@ main {
 .loading.show { display: flex; }
 .spinner {
   width: 40px; height: 40px;
-  border: 3px solid var(--border);
+  border: 3px solid rgba(21, 32, 43, 0.12);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -600,13 +651,19 @@ main {
 
 @media (max-width: 480px) {
   .step-card { padding: 24px 20px; }
-  .step-q { font-size: 19px; }
+  .step-q {
+    font-size: 30px;
+    max-width: none;
+  }
   .opts-grid { grid-template-columns: 1fr; }
   .range-grid { grid-template-columns: 1fr; }
   .header {
     gap: 12px;
     align-items: flex-start;
     flex-direction: column;
+  }
+  .shell {
+    width: min(100% - 24px, 1180px);
   }
   .header-actions { width: 100%; }
   .page-link,
@@ -618,41 +675,42 @@ main {
 </style>
 </head>
 <body>
-
-<div class="header">
-  <a class="logo" href="/">
-    <div class="logo-icon">📋</div>
-    <div class="logo-name">JobReady</div>
-  </a>
-  <div class="header-actions">
-    <a class="page-link" href="/">Home</a>
-    <a class="page-link" href="/privacy">Privacy</a>
-    <a class="page-link reset-link" href="/?reset=1" onclick="return resetToHome(event)">Reset</a>
-    <button class="import-btn" id="importBtn" type="button" onclick="openOcrImport()">Import resume</button>
-    <select class="lang-select" id="langSel" onchange="changeLang(this.value)">
-      <option value="en">🇬🇧 English</option>
-      <option value="zh">🇨🇳 中文</option>
-      <option value="ms">🇲🇾 Melayu</option>
-      <option value="ta">🇮🇳 தமிழ்</option>
-      <option value="hi">🇮🇳 हिन्दी</option>
-      <option value="bn">🇧🇩 বাংলা</option>
-    </select>
+<div class="shell">
+  <div class="header">
+    <a class="logo" href="/">
+      <div class="logo-icon">JR</div>
+      <div class="logo-name">JobReady</div>
+    </a>
+    <div class="header-actions">
+      <a class="page-link" href="/">Home</a>
+      <a class="page-link" href="/privacy">Privacy</a>
+      <a class="page-link reset-link" href="/?reset=1" onclick="return resetToHome(event)">Reset</a>
+      <button class="import-btn" id="importBtn" type="button" onclick="openOcrImport()">Import resume</button>
+      <select class="lang-select" id="langSel" onchange="changeLang(this.value)">
+        <option value="en">🇬🇧 English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ms">🇲🇾 Melayu</option>
+        <option value="ta">🇮🇳 தமிழ்</option>
+        <option value="hi">🇮🇳 हिन्दी</option>
+        <option value="bn">🇧🇩 বাংলা</option>
+      </select>
+    </div>
   </div>
-</div>
 
-<div class="progress-wrap" id="progressWrap">
-  <div class="progress-info">
-    <span id="stepLabel">Step 1 of 20</span>
-    <span id="stepPct">0%</span>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-info">
+      <span id="stepLabel">Step 1 of 20</span>
+      <span id="stepPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <div class="ocr-status" id="ocrStatus"></div>
+
+  <main>
+    <div class="wizard" id="wizard"></div>
+  </main>
 </div>
-
-<div class="ocr-status" id="ocrStatus"></div>
-
-<main>
-  <div class="wizard" id="wizard"></div>
-</main>
 
 <div class="loading" id="loading">
   <div class="spinner"></div>
