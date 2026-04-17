@@ -3,1279 +3,707 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JobReady — Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>JobReady — Stop chasing workers for their details.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+
 :root {
-  --bg: #ede5d8;
-  --surface: rgba(255, 252, 247, 0.9);
-  --surface-strong: rgba(255, 255, 255, 0.96);
-  --ink: #13202b;
-  --muted: #62717f;
-  --line: rgba(19, 32, 43, 0.12);
-  --brand: #c85e38;
-  --brand-dark: #943b1d;
-  --brand-soft: #fff0e3;
-  --accent: #2c766d;
-  --accent-soft: #e5f3f0;
-  --hero: #0e171e;
-  --hero-soft: #14222d;
-  --shadow: 0 28px 90px rgba(12, 18, 24, 0.18);
-  --radius-xl: 34px;
-  --radius-lg: 26px;
-  --radius-md: 18px;
+  --bg:         #ffffff;
+  --bg-alt:     #f5f2ec;
+  --ink:        #0d1b27;
+  --muted:      #7a8a96;
+  --brand:      #c85e38;
+  --brand-dark: #a34526;
+  --line:       rgba(13, 27, 39, 0.08);
+  --radius:     20px;
+  --shadow:     0 8px 48px rgba(13, 27, 39, 0.10);
+  --shell:      min(1120px, calc(100% - 48px));
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-
-body {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  color: var(--ink);
-  background:
-    radial-gradient(circle at top left, rgba(200, 94, 56, 0.16), transparent 24%),
-    radial-gradient(circle at top right, rgba(44, 118, 109, 0.12), transparent 22%),
-    linear-gradient(180deg, #0e171e 0, #13212b 34rem, #efe7da 34rem, #ede5d8 100%);
-}
-
+body { font-family: "Plus Jakarta Sans", sans-serif; color: var(--ink); background: var(--bg); }
 a { color: inherit; text-decoration: none; }
+img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
-code {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(19, 32, 43, 0.08);
+.shell { width: var(--shell); margin: 0 auto; }
+
+/* ── NOTICE ──────────────────────────────────────────────────── */
+.notice {
+  display: none;
+  padding: 12px 16px;
+  background: rgba(200, 94, 56, 0.08);
+  border-bottom: 1px solid rgba(200, 94, 56, 0.14);
+  text-align: center;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
+  color: var(--brand);
 }
+.notice.show { display: block; }
 
-.shell {
-  width: min(1180px, calc(100% - 32px));
-  margin: 0 auto;
+/* ── NAV ─────────────────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
 }
-
-.hero-band {
-  position: relative;
-  overflow: hidden;
-  color: #fff;
-}
-
-.hero-band::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(44, 118, 109, 0.4), transparent 22%),
-    radial-gradient(circle at 82% 16%, rgba(200, 94, 56, 0.38), transparent 24%),
-    radial-gradient(circle at 52% 82%, rgba(255, 255, 255, 0.08), transparent 22%);
-  pointer-events: none;
-}
-
-.hero-band::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 180px;
-  background: linear-gradient(180deg, rgba(14, 23, 30, 0), rgba(14, 23, 30, 0.7));
-  pointer-events: none;
-}
-
-.hero-shell {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.topbar {
-  padding: 24px 0 18px;
-}
-
-.topbar-inner {
+.nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 24px;
+  height: 68px;
 }
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-mark {
-  width: 46px;
-  height: 46px;
-  border-radius: 15px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--brand) 0%, #ea8b57 100%);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  box-shadow: 0 18px 36px rgba(200, 94, 56, 0.28);
-}
-
-.brand-copy {
-  display: grid;
-  gap: 2px;
-}
-
-.brand-name {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-.brand-sub {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.58);
-}
-
-.nav-actions {
+.nav-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
-
-.nav-link {
+.nav-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.nav-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 16px;
+  height: 42px;
+  padding: 0 20px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px);
+  background: var(--brand);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
-  transition: 0.18s ease;
+  transition: background 0.15s;
+  white-space: nowrap;
 }
+.nav-cta:hover { background: var(--brand-dark); }
 
-.nav-link:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.nav-link.primary {
-  border-color: transparent;
-  background: #fff;
-  color: var(--hero);
-}
-
-.nav-link.reset {
-  background: rgba(255, 240, 227, 0.12);
-  border-color: rgba(255, 240, 227, 0.18);
-  color: #ffd6c5;
-}
-
-.notice {
-  display: none;
-  margin-top: 12px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 240, 227, 0.14);
-  background: rgba(255, 240, 227, 0.12);
-  color: #ffe3d5;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.notice.show { display: block; }
-
-.hero-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
-  gap: 36px;
+/* ── HERO ────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
   align-items: center;
-  padding: 42px 0 72px;
+  background-image: url('hero.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  background-color: #0d1b27;
+  overflow: hidden;
 }
-
-.hero-copy {
-  max-width: 33rem;
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right,
+    rgba(13,27,39,0.55) 0%,
+    rgba(13,27,39,0.30) 100%);
+  pointer-events: none;
 }
-
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  padding: 80px 0;
+}
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(255, 240, 227, 0.12);
-  border: 1px solid rgba(255, 240, 227, 0.12);
-  color: #ffd7c7;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.66);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  margin-bottom: 28px;
 }
-
-.hero-brandline {
-  margin-top: 18px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.52);
-}
-
 .hero h1 {
-  margin-top: 16px;
   font-family: "Fraunces", serif;
-  font-size: clamp(46px, 7vw, 82px);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
-  max-width: 10ch;
+  font-size: clamp(50px, 6.5vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: #fff;
 }
-
-.hero h1 .accent {
-  display: block;
-  background: linear-gradient(135deg, #ffffff 0%, #9de4dd 36%, #ffd1b8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.hero-text {
-  margin-top: 20px;
-  max-width: 33rem;
-  color: rgba(255, 255, 255, 0.72);
+.hero-sub {
+  margin-top: 24px;
   font-size: 17px;
-  line-height: 1.8;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.68);
+  max-width: 46ch;
 }
-
-.hero-points {
-  margin-top: 22px;
+.hero-actions {
+  margin-top: 36px;
   display: flex;
+  align-items: center;
+  gap: 14px;
   flex-wrap: wrap;
-  gap: 10px;
 }
-
-.hero-point {
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  justify-content: center;
+  height: 52px;
+  padding: 0 28px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.15s;
 }
-
+.btn-white { background: #fff; color: var(--ink); }
+.btn-white:hover { background: #f0ede8; }
+.btn-outline {
+  color: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+.btn-outline:hover { background: rgba(255, 255, 255, 0.08); }
 .draft-chip {
   display: none;
   margin-top: 18px;
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: rgba(44, 118, 109, 0.16);
-  border: 1px solid rgba(44, 118, 109, 0.2);
-  color: #bde6df;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.draft-chip.show { display: inline-flex; }
-
-.cta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 26px;
-}
-
-.cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px;
-  padding: 0 22px;
-  border-radius: 16px;
-  font-size: 15px;
-  font-weight: 800;
-  transition: 0.18s ease;
-}
-
-.cta:hover { transform: translateY(-1px); }
-
-.cta.primary {
-  background: #fff;
-  color: var(--hero);
-}
-
-.cta.secondary {
-  display: none;
-  background: linear-gradient(135deg, var(--brand) 0%, #ea8b57 100%);
-  color: #fff;
-  box-shadow: 0 20px 34px rgba(200, 94, 56, 0.26);
-}
-
-.cta.ghost {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.hero-visual {
-  position: relative;
-  min-height: 540px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.hero-orbit {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 430px;
-  height: 430px;
-  border-radius: 50%;
-  transform: translate(-50%, -52%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 80px rgba(255, 255, 255, 0.03),
-    0 0 80px rgba(44, 118, 109, 0.08);
-}
-
-.hero-orbit::before,
-.hero-orbit::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.hero-orbit::before { inset: 38px; }
-.hero-orbit::after { inset: 88px; }
-
-.floating-note {
-  position: absolute;
-  padding: 10px 12px;
-  border-radius: 18px;
+  padding: 10px 14px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.floating-note.one { top: 58px; right: 8px; }
-.floating-note.two { left: 0; top: 160px; }
-.floating-note.three { right: 18px; bottom: 44px; }
-
-.visual-sheet {
-  position: relative;
-  width: min(100%, 390px);
-  border-radius: 30px;
-  padding: 22px;
-  background: linear-gradient(180deg, rgba(252, 246, 239, 0.94), rgba(250, 244, 236, 0.84));
-  color: var(--ink);
-  box-shadow: 0 36px 80px rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.sheet-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.sheet-topline strong {
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  text-transform: none;
-  font-size: 15px;
-}
-
-.sheet-title {
-  margin-top: 18px;
-  font-family: "Fraunces", serif;
-  font-size: 34px;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.sheet-copy {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.sheet-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.sheet-item {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(19, 32, 43, 0.08);
-}
-
-.sheet-icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: var(--brand-soft);
-  color: var(--brand-dark);
-  font-size: 19px;
-}
-
-.sheet-item strong {
-  display: block;
-  font-size: 14px;
-  letter-spacing: -0.02em;
-}
-
-.sheet-item span {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.proof-strip {
-  position: relative;
-  z-index: 1;
-  margin-top: -34px;
-}
-
-.proof-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.proof-card {
-  padding: 22px;
-  border-radius: 24px;
-  background: rgba(255, 252, 247, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.78);
-  box-shadow: var(--shadow);
-}
-
-.proof-card span {
-  display: block;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.proof-card strong {
-  display: block;
-  margin-top: 10px;
-  font-size: 24px;
-  letter-spacing: -0.04em;
-}
-
-.proof-card p {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.landing {
-  padding: 56px 0 36px;
-}
-
-.section {
-  padding: 0 0 30px;
-}
-
-.section-head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.section-head h2 {
-  font-family: "Fraunces", serif;
-  font-size: clamp(30px, 4vw, 48px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  max-width: 12ch;
-}
-
-.section-head p {
-  max-width: 32rem;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.feature-stage {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 18px;
-  align-items: stretch;
-}
-
-.feature-rail {
-  border-radius: var(--radius-xl);
-  padding: 26px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 250, 244, 0.84));
-  border: 1px solid rgba(255, 255, 255, 0.84);
-  box-shadow: var(--shadow);
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.feature-card {
-  position: relative;
-  overflow: hidden;
-  min-height: 100%;
-  padding: 22px;
-  border-radius: 28px;
-  color: #fff;
-  background: linear-gradient(180deg, #17232d 0%, #101821 100%);
-  box-shadow: 0 26px 60px rgba(16, 24, 34, 0.18);
-}
-
-.feature-card::before {
-  content: "";
-  position: absolute;
-  inset: auto -40px -80px auto;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
-}
-
-.feature-card.pink { background: linear-gradient(180deg, #4c1d27 0%, #241218 100%); }
-.feature-card.emerald { background: linear-gradient(180deg, #18352f 0%, #0f1c18 100%); }
-
-.feature-tag {
-  display: inline-flex;
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.feature-card h3 {
-  margin-top: 16px;
-  font-size: 22px;
-  letter-spacing: -0.03em;
-  max-width: 10ch;
-}
-
-.feature-card p {
-  margin-top: 10px;
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 14px;
-  line-height: 1.75;
-}
-
-.feature-list {
-  margin-top: 16px;
-  display: grid;
-  gap: 10px;
-}
-
-.feature-list span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 13px;
   font-weight: 600;
 }
-
-.support-panel {
-  border-radius: var(--radius-xl);
-  padding: 26px;
-  background: rgba(255, 252, 247, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: var(--shadow);
-}
-
-.support-panel .eyebrow {
-  display: inline-flex;
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.support-panel h3 {
-  margin-top: 16px;
-  font-family: "Fraunces", serif;
-  font-size: 34px;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.support-panel p {
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.support-rows {
-  margin-top: 20px;
-  display: grid;
-  gap: 12px;
-}
-
-.support-row {
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(19, 32, 43, 0.08);
-}
-
-.support-row strong {
-  display: block;
-  font-size: 14px;
-}
-
-.support-row span {
-  display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.story-grid {
-  display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap: 18px;
-}
-
-.story-panel,
-.timeline {
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  background: rgba(255, 252, 247, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.84);
-  box-shadow: var(--shadow);
-}
-
-.story-panel h3 {
-  font-family: "Fraunces", serif;
-  font-size: 38px;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  max-width: 10ch;
-}
-
-.story-panel p {
+.draft-chip.show { display: inline-flex; }
+.hero-note {
   margin-top: 14px;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.36);
 }
 
-.timeline {
-  display: grid;
-  gap: 14px;
+/* ── VALUE CARDS ─────────────────────────────────────────────── */
+.values {
+  background: var(--bg);
+  padding: 80px 0;
+  border-bottom: 1px solid var(--line);
 }
-
-.timeline-item {
+.values-grid {
   display: grid;
-  grid-template-columns: 54px 1fr;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(19, 32, 43, 0.08);
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--line);
+  gap: 1px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
-
-.timeline-no {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--accent) 0%, #54a29a 100%);
-  color: #fff;
+.value-card {
+  background: var(--bg);
+  padding: 32px 28px;
+}
+.value-card h3 {
   font-size: 15px;
   font-weight: 800;
-}
-
-.timeline-item h3 {
-  font-size: 18px;
   letter-spacing: -0.02em;
 }
-
-.timeline-item p {
-  margin-top: 6px;
-  color: var(--muted);
+.value-card p {
+  margin-top: 10px;
   font-size: 14px;
   line-height: 1.7;
+  color: var(--muted);
 }
 
-.quote-grid {
+/* ── HOW IT WORKS ────────────────────────────────────────────── */
+.how {
+  background: var(--bg-alt);
+  padding: 100px 0;
+}
+.how-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+.how-row + .how-row {
+  margin-top: 80px;
+  padding-top: 80px;
+  border-top: 1px solid var(--line);
+}
+.how-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 16px;
+}
+.how-copy h2 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+.how-copy p {
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 40ch;
+}
+.how-visual {
+  aspect-ratio: 4 / 3;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--ink);
+  box-shadow: var(--shadow);
+  /*
+    Add photo: place an <img> tag inside this div, or set:
+    background-image: url('your-photo.jpg');
+    background-size: cover;
+    background-position: center;
+  */
+}
+
+/* ── BRAND CALLOUT ───────────────────────────────────────────── */
+.callout {
+  background: var(--bg);
+  padding: 96px 0;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+.callout blockquote {
+  font-family: "Fraunces", serif;
+  font-size: clamp(22px, 2.8vw, 34px);
+  line-height: 1.45;
+  letter-spacing: -0.03em;
+  max-width: 26ch;
+  margin: 0 auto;
+  font-style: normal;
+}
+.callout blockquote em {
+  font-style: normal;
+  color: var(--brand);
+}
+
+/* ── FEATURE TILES ───────────────────────────────────────────── */
+.features {
+  background: var(--bg-alt);
+  padding: 88px 0;
+}
+.features-head {
+  margin-bottom: 44px;
+}
+.features-head h2 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(26px, 2.8vw, 36px);
+  letter-spacing: -0.03em;
+}
+.features-head p {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
-
-.quote-card {
-  padding: 24px;
-  border-radius: 28px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 244, 0.86));
-  border: 1px solid rgba(255, 255, 255, 0.84);
-  box-shadow: var(--shadow);
+.tile {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
 }
-
-.quote-card strong {
-  display: block;
-  font-size: 18px;
-  line-height: 1.4;
+.tile-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+  margin-bottom: 18px;
+}
+.tile h3 {
+  font-size: 15px;
+  font-weight: 800;
   letter-spacing: -0.02em;
 }
-
-.quote-card p {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.8;
-}
-
-.final-cta {
-  position: relative;
-  overflow: hidden;
-  border-radius: 36px;
-  padding: 34px;
-  background: linear-gradient(135deg, #14212b 0%, #1b2e39 48%, #2b4a4c 100%);
-  color: #fff;
-  box-shadow: var(--shadow);
-}
-
-.final-cta::before {
-  content: "";
-  position: absolute;
-  inset: auto -50px -120px auto;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0%, transparent 70%);
-}
-
-.final-cta-inner {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.final-cta-copy h2 {
-  font-family: "Fraunces", serif;
-  font-size: clamp(34px, 4.5vw, 54px);
-  line-height: 0.95;
-  letter-spacing: -0.05em;
-  max-width: 10ch;
-}
-
-.final-cta-copy p {
-  margin-top: 14px;
-  max-width: 32rem;
-  color: rgba(255, 255, 255, 0.74);
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.footer-band {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #14212b 0%, #1b2e39 48%, #2b4a4c 100%);
+.tile p {
   margin-top: 8px;
-  padding: 52px 0 34px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ── CTA BAND ────────────────────────────────────────────────── */
+.cta-band {
+  background: var(--ink);
+  padding: 96px 0;
+  text-align: center;
   color: #fff;
 }
-
-.footer-band::before {
-  content: "JOBREADY";
-  position: absolute;
-  inset: auto 0 48px;
-  text-align: center;
-  font-size: clamp(4rem, 15vw, 12rem);
-  font-weight: 800;
-  letter-spacing: -0.12em;
-  color: rgba(255, 255, 255, 0.05);
-  pointer-events: none;
+.cta-band h2 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(32px, 4vw, 52px);
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
-
-.footer-panel {
-  position: relative;
-  z-index: 1;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 24px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.footer-brand {
-  max-width: 26rem;
-}
-
-.footer-brand .brand-mark {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-}
-
-.footer-brand p {
+.cta-band p {
   margin-top: 14px;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.56);
 }
-
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.footer-links a {
+.btn-brand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 16px;
+  margin-top: 36px;
+  height: 56px;
+  padding: 0 36px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--brand);
   color: #fff;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
+  transition: background 0.15s;
 }
+.btn-brand:hover { background: var(--brand-dark); }
 
-.footer-meta {
-  margin-top: 18px;
-  color: rgba(255, 255, 255, 0.46);
+/* ── FOOTER ──────────────────────────────────────────────────── */
+.footer {
+  background: var(--ink);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 36px 0;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-links a {
   font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.46);
+  transition: color 0.15s;
+}
+.footer-links a:hover { color: #fff; }
+.footer-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.28);
 }
 
-@media (max-width: 1080px) {
-  .hero-grid,
-  .feature-stage,
-  .story-grid,
-  .quote-grid,
-  .proof-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-copy,
-  .hero h1,
-  .story-panel h3,
-  .section-head h2,
-  .final-cta-copy h2 {
-    max-width: none;
-  }
-
-  .hero-visual {
-    min-height: 440px;
-  }
-
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .values-grid       { grid-template-columns: repeat(2, 1fr); }
+  .how-row           { grid-template-columns: 1fr; gap: 36px; }
+  .how-row .how-visual { order: -1; }
+  .tiles             { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 760px) {
-  .shell {
-    width: min(100% - 24px, 1180px);
-  }
-
-  .topbar-inner,
-  .section-head,
-  .final-cta-inner,
-  .footer-panel {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hero-grid {
-    gap: 22px;
-    padding: 22px 0 48px;
-  }
-
-  .hero-visual {
-    min-height: 340px;
-  }
-
-  .hero-orbit {
-    width: 280px;
-    height: 280px;
-  }
-
-  .hero-text,
-  .section-head p,
-  .final-cta-copy p {
-    font-size: 14px;
-  }
-
-  .proof-strip {
-    margin-top: -20px;
-  }
-
-  .landing {
-    padding: 44px 0 28px;
-  }
-
-  .visual-sheet,
-  .feature-rail,
-  .support-panel,
-  .story-panel,
-  .timeline,
-  .quote-card,
-  .proof-card,
-  .final-cta {
-    padding: 22px;
-  }
-
-  .nav-actions,
-  .cta-row,
-  .footer-links {
-    width: 100%;
-  }
-
-  .nav-link,
-  .cta,
-  .footer-links a {
-    width: 100%;
-  }
-
-  .floating-note {
-    display: none;
-  }
+@media (max-width: 600px) {
+  :root { --shell: calc(100% - 32px); }
+  .nav-links         { display: none; }
+  .values-grid       { grid-template-columns: 1fr; }
+  .tiles             { grid-template-columns: 1fr; }
+  .hero h1           { font-size: 46px; }
+  .footer-inner      { flex-direction: column; align-items: flex-start; }
 }
+
 </style>
 </head>
 <body>
 
-<section class="hero-band">
-  <div class="shell hero-shell">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <a class="brand" href="/">
-          <span class="brand-mark">JR</span>
-          <span class="brand-copy">
-            <span class="brand-name">JobReady</span>
-            <span class="brand-sub">Resume intake workflow</span>
-          </span>
-        </a>
-        <nav class="nav-actions">
-          <a class="nav-link primary" id="startNavLink" href="/resume">Start Resume</a>
-          <a class="nav-link" href="/privacy">Privacy</a>
-          <a class="nav-link reset" href="/?reset=1">Reset</a>
-        </nav>
-      </div>
-      <div class="notice" id="resetNotice">Saved draft cleared. You are back on the home page.</div>
-    </header>
+<div class="notice" id="resetNotice">Saved draft cleared. You are back on the home page.</div>
 
-    <main class="hero">
-      <section class="hero-grid">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">For Singapore manpower agencies</span>
-          <div class="hero-brandline">JobReady</div>
-          <h1>
-            Workers apply.
-            <span class="accent">You get a clean, tagged packet.</span>
-          </h1>
-          <p class="hero-text">
-            Share one link with your overseas partner. Workers fill the form themselves and submit — already routed to you.
-          </p>
-          <div class="hero-points">
-            <div class="hero-point">Unique link per overseas partner</div>
-            <div class="hero-point">Works on phone or desktop</div>
-            <div class="hero-point">Resume + documents in one packet</div>
-          </div>
-          <div class="draft-chip" id="draftChip">Saved draft found. You can continue where you left off.</div>
-          <div class="cta-row">
-            <a class="cta primary" id="startCta" href="/resume">Start Application</a>
-            <a class="cta secondary" id="continueCta" href="/resume">Continue Draft</a>
-            <a class="cta ghost" href="/privacy">Read Privacy Policy</a>
-          </div>
-        </div>
-
-        <div class="hero-visual" aria-hidden="true">
-          <div class="hero-orbit"></div>
-          <div class="floating-note one">Unique link for each overseas agency</div>
-          <div class="floating-note two">Workers upload as many files as needed</div>
-          <div class="floating-note three">Built for Singapore agency intake</div>
-          <div class="visual-sheet">
-            <div class="sheet-topline">
-              <span>Submission packet</span>
-              <strong>JobReady</strong>
-            </div>
-            <div class="sheet-title">One link. One clean handoff.</div>
-            <div class="sheet-copy">
-              The worker opens your partner link, fills the form, and submits — agency already preselected.
-            </div>
-            <div class="sheet-list">
-              <div class="sheet-item">
-                <div class="sheet-icon">01</div>
-                <div>
-                  <strong>Open the partner link</strong>
-                  <span>Agency and referral tag are already attached — no guessing needed.</span>
-                </div>
-              </div>
-              <div class="sheet-item">
-                <div class="sheet-icon">02</div>
-                <div>
-                  <strong>Fill and attach documents</strong>
-                  <span>Passport, certificates, and extra files go in the same submission.</span>
-                </div>
-              </div>
-              <div class="sheet-item">
-                <div class="sheet-icon">03</div>
-                <div>
-                  <strong>Review and submit</strong>
-                  <span>One organized packet lands in the right agency folder.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-</section>
-
-<section class="proof-strip">
+<!-- NAV -->
+<nav class="nav">
   <div class="shell">
-    <div class="proof-grid">
-      <article class="proof-card">
-        <span>Partner routing</span>
-        <strong>A unique link for every overseas partner</strong>
-        <p>Every submission arrives pre-tagged to the right Singapore agency.</p>
-      </article>
-      <article class="proof-card">
-        <span>Worker self-service</span>
-        <strong>Workers fill the form themselves</strong>
-        <p>No back-and-forth. Applicants complete and submit on their own device.</p>
-      </article>
-      <article class="proof-card">
-        <span>One packet</span>
-        <strong>Resume and documents together</strong>
-        <p>Everything lands in one organized folder — no scattered follow-ups.</p>
-      </article>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">
+        <span class="nav-mark">JR</span>
+        <span class="nav-name">JobReady</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how-it-works">How it works</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <a class="nav-cta" id="navCta" href="/resume">Try it free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="shell">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">For Singapore manpower agencies</span>
+      <h1>Stop chasing workers for their details.</h1>
+      <p class="hero-sub">Send one link. They fill it themselves. You get a clean, tagged application — ready to forward.</p>
+      <div class="hero-actions">
+        <a class="btn btn-white" id="heroCta" href="/resume">Try it free</a>
+        <a class="btn btn-outline" href="#how-it-works">See how it works</a>
+      </div>
+      <div class="draft-chip" id="draftChip">Saved draft found — continue where you left off.</div>
+      <p class="hero-note">No setup needed.</p>
     </div>
   </div>
 </section>
 
-<main class="landing">
+<!-- VALUE CARDS -->
+<section class="values">
   <div class="shell">
-    <section class="section" id="features">
-      <div class="section-head">
-        <h2>Built for the agency-to-agency handoff.</h2>
-        <p>Less chasing. Cleaner routing. One complete packet per worker.</p>
+    <div class="values-grid">
+      <div class="value-card">
+        <h3>One link per partner</h3>
+        <p>Each overseas agency gets a unique link with your agency already pre-tagged.</p>
       </div>
-
-      <div class="feature-stage">
-        <div class="feature-rail">
-          <div class="feature-grid">
-            <article class="feature-card">
-              <span class="feature-tag">Partner links</span>
-              <h3>A unique link per overseas partner.</h3>
-              <p>Agency and referral tag are preselected before the worker even starts.</p>
-              <div class="feature-list">
-                <span>Agency preselected</span>
-                <span>Partner tag attached</span>
-                <span>Cleaner forwarding</span>
-              </div>
-            </article>
-            <article class="feature-card pink">
-              <span class="feature-tag">Worker intake</span>
-              <h3>Workers fill it themselves.</h3>
-              <p>Simple prompts, mobile-friendly, with a review step before submit.</p>
-              <div class="feature-list">
-                <span>Phone-friendly flow</span>
-                <span>Calendar pickers</span>
-                <span>Review before submit</span>
-              </div>
-            </article>
-            <article class="feature-card emerald">
-              <span class="feature-tag">Documents</span>
-              <h3>Resume and files in one go.</h3>
-              <p>Import an old resume via OCR, then attach passport, certificates, and more.</p>
-              <div class="feature-list">
-                <span>Browser-side OCR</span>
-                <span>Unlimited attachments</span>
-                <span>Mirrored storage</span>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <aside class="support-panel">
-          <span class="eyebrow">Why agencies use it</span>
-          <h3>Stop reconstructing applications from chat messages.</h3>
-          <p>Workers arrive with incomplete files. JobReady fixes the intake before it reaches you.</p>
-          <div class="support-rows">
-            <div class="support-row">
-              <strong>Fewer routing mistakes</strong>
-              <span>The right agency is attached from the first click.</span>
-            </div>
-            <div class="support-row">
-              <strong>Less manual collection</strong>
-              <span>Workers complete the form — you don't chase them for details.</span>
-            </div>
-            <div class="support-row">
-              <strong>More complete handoffs</strong>
-              <span>Resume, documents, and partner tag arrive together.</span>
-            </div>
-          </div>
-        </aside>
+      <div class="value-card">
+        <h3>Workers self-serve</h3>
+        <p>They fill the form on their phone. No back-and-forth over WhatsApp.</p>
       </div>
-    </section>
-
-    <section class="section" id="workflow">
-      <div class="section-head">
-        <h2>How it works.</h2>
-        <p>Simple for the worker. Structured for the agency.</p>
+      <div class="value-card">
+        <h3>Pre-tagged routing</h3>
+        <p>Every submission arrives already routed to the right Singapore agency.</p>
       </div>
-
-      <div class="story-grid">
-        <div class="story-panel">
-          <h3>One link in. One packet out.</h3>
-          <p>Whether the worker starts fresh or imports an old resume, the agency gets one clean, tagged submission.</p>
-        </div>
-
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-no">01</div>
-            <div>
-              <h3>Share the partner link</h3>
-              <p>The overseas agency sends their unique link. Agency routing is already attached.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-no">02</div>
-            <div>
-              <h3>Worker fills and uploads</h3>
-              <p>They complete the form, import an old resume if needed, and attach documents.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-no">03</div>
-            <div>
-              <h3>Tagged packet delivered</h3>
-              <p>One organized folder — saved and mirrored with the partner tag included.</p>
-            </div>
-          </div>
-        </div>
+      <div class="value-card">
+        <h3>One complete packet</h3>
+        <p>Resume, documents, and partner tag — together, organized, clean.</p>
       </div>
-    </section>
-
-    <section class="section" id="proof">
-      <div class="section-head">
-        <h2>Common questions.</h2>
-        <p>Straight answers about how JobReady works.</p>
-      </div>
-
-      <div class="quote-grid">
-        <article class="quote-card">
-          <strong>Can each overseas partner have its own link?</strong>
-          <p>Yes. Each partner gets a unique link with their agency tag pre-attached.</p>
-        </article>
-        <article class="quote-card">
-          <strong>Is the Singapore agency preselected?</strong>
-          <p>Yes. The target agency is locked in from the partner link — no manual typing needed.</p>
-        </article>
-        <article class="quote-card">
-          <strong>Can workers import an old resume?</strong>
-          <p>Yes. Browser OCR reads a resume image and pre-fills the form. Workers can attach extra files too.</p>
-        </article>
-        <article class="quote-card">
-          <strong>Where does the submission go?</strong>
-          <p>It's saved to the agency folder and mirrored to storage — with the partner tag included.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="final-cta">
-        <div class="final-cta-inner">
-          <div class="final-cta-copy">
-            <h2>Ready for the next applicant?</h2>
-            <p>Open the builder or pick up where you left off.</p>
-          </div>
-          <div class="cta-row" style="margin-top:0;">
-            <a class="cta primary" id="footerStartCta" href="/resume">Open Application Builder</a>
-            <a class="cta secondary" id="footerContinueCta" href="/resume">Continue Draft</a>
-            <a class="cta ghost" href="/?reset=1">Reset and Stay Home</a>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
-</main>
+</section>
 
-<footer class="footer-band">
+<!-- HOW IT WORKS -->
+<section class="how" id="how-it-works">
   <div class="shell">
-    <div class="footer-panel">
-      <div class="footer-brand">
-        <a class="brand" href="/">
-          <span class="brand-mark">JR</span>
-          <span class="brand-copy">
-            <span class="brand-name">JobReady</span>
-            <span class="brand-sub">Resume intake workflow</span>
-          </span>
-        </a>
-        <p>Worker applications, routed and ready — for Singapore agencies and their overseas partners.</p>
-        <div class="footer-meta">© 2026 JobReady • Singapore</div>
-      </div>
 
+    <div class="how-row">
+      <div class="how-copy">
+        <div class="how-label">Step 01</div>
+        <h2>Share the link with your overseas partner.</h2>
+        <p>Each partner gets a unique JobReady link. When the worker opens it, your agency is already selected — they just fill and submit.</p>
+      </div>
+      <div class="how-visual" style="background:#f5f2ec; display:flex; align-items:center; justify-content:center; padding:32px;">
+        <div style="width:100%; max-width:320px; font-family:'Plus Jakarta Sans',sans-serif;">
+          <!-- Phone frame -->
+          <div style="background:#0d1b27; border-radius:28px; padding:20px; box-shadow:0 24px 60px rgba(13,27,39,0.22);">
+            <!-- Status bar -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:0 4px;">
+              <span style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700;">9:41</span>
+              <div style="display:flex; gap:5px; align-items:center;">
+                <div style="width:14px; height:7px; border:1.5px solid rgba(255,255,255,0.5); border-radius:2px; position:relative;"><div style="position:absolute; inset:1.5px 1.5px 1.5px auto; width:40%; background:rgba(255,255,255,0.5); border-radius:1px;"></div></div>
+              </div>
+            </div>
+            <!-- Chat bubble header -->
+            <div style="display:flex; align-items:center; gap:10px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:14px;">
+              <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#c85e38,#ea8b57); display:grid; place-items:center; font-size:13px; font-weight:800; color:#fff; flex-shrink:0;">P</div>
+              <div>
+                <div style="color:#fff; font-size:13px; font-weight:700;">Partner Agency</div>
+                <div style="color:rgba(255,255,255,0.4); font-size:11px;">Online</div>
+              </div>
+            </div>
+            <!-- Chat messages -->
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+              <div style="align-self:flex-start; background:rgba(255,255,255,0.08); border-radius:14px 14px 14px 4px; padding:10px 13px; max-width:80%;">
+                <div style="color:rgba(255,255,255,0.78); font-size:12px; line-height:1.5;">Hi, we have 3 workers ready to apply to your agency.</div>
+              </div>
+              <!-- Link card -->
+              <div style="align-self:flex-end; max-width:88%;">
+                <div style="background:#c85e38; border-radius:14px 14px 4px 14px; padding:11px 13px;">
+                  <div style="color:rgba(255,255,255,0.72); font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:5px;">Application link</div>
+                  <div style="color:#fff; font-size:12px; font-weight:700; word-break:break-all;">jobready.sg/apply/<span style="opacity:0.75;">partner-myagency</span></div>
+                  <div style="margin-top:7px; color:rgba(255,255,255,0.6); font-size:11px;">Agency pre-tagged · Share with workers</div>
+                </div>
+              </div>
+              <div style="align-self:flex-start; background:rgba(255,255,255,0.08); border-radius:14px 14px 14px 4px; padding:10px 13px; max-width:80%;">
+                <div style="color:rgba(255,255,255,0.78); font-size:12px; line-height:1.5;">Got it, sending to them now!</div>
+              </div>
+            </div>
+            <!-- Input bar -->
+            <div style="background:rgba(255,255,255,0.07); border-radius:999px; padding:9px 14px; display:flex; align-items:center; justify-content:space-between;">
+              <span style="color:rgba(255,255,255,0.28); font-size:12px;">Message</span>
+              <div style="width:26px; height:26px; border-radius:50%; background:#c85e38; display:grid; place-items:center;">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 10L10 1M10 1H3M10 1V8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-row">
+      <div class="how-visual" style="background:#f5f2ec; display:flex; align-items:center; justify-content:center; padding:32px;">
+        <div style="width:100%; max-width:340px; font-family:'Plus Jakarta Sans',sans-serif;">
+          <!-- Folder card -->
+          <div style="background:#fff; border-radius:24px; padding:22px; box-shadow:0 24px 60px rgba(13,27,39,0.14); border:1px solid rgba(13,27,39,0.07);">
+            <!-- Header -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+              <div>
+                <div style="font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#7a8a96; margin-bottom:4px;">New submission</div>
+                <div style="font-size:16px; font-weight:800; letter-spacing:-0.02em; color:#0d1b27;">Ahmad Bin Yusof</div>
+              </div>
+              <div style="background:#edfaf3; border-radius:999px; padding:5px 11px; display:flex; align-items:center; gap:5px;">
+                <div style="width:6px; height:6px; border-radius:50%; background:#22c55e;"></div>
+                <span style="font-size:11px; font-weight:700; color:#16a34a;">Received</span>
+              </div>
+            </div>
+            <!-- Tags -->
+            <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px;">
+              <span style="background:#fff0e8; color:#c85e38; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px;">SG Agency: Premier Manpower</span>
+              <span style="background:#f0f4f8; color:#7a8a96; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px;">via partner-myagency</span>
+            </div>
+            <!-- File list -->
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; background:#f8f7f5; border-radius:12px; border:1px solid rgba(13,27,39,0.06);">
+                <div style="width:32px; height:32px; border-radius:9px; background:#fff0e8; display:grid; place-items:center; flex-shrink:0;">
+                  <svg width="15" height="16" viewBox="0 0 15 16" fill="none"><rect x="1" y="1" width="13" height="14" rx="2" stroke="#c85e38" stroke-width="1.5"/><path d="M4 5h7M4 8h7M4 11h4" stroke="#c85e38" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:13px; font-weight:700; color:#0d1b27; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">resume.pdf</div>
+                  <div style="font-size:11px; color:#7a8a96; margin-top:1px;">Generated · 48 KB</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M1 10v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="#c85e38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; background:#f8f7f5; border-radius:12px; border:1px solid rgba(13,27,39,0.06);">
+                <div style="width:32px; height:32px; border-radius:9px; background:#f0f4ff; display:grid; place-items:center; flex-shrink:0;">
+                  <svg width="15" height="16" viewBox="0 0 15 16" fill="none"><rect x="1" y="1" width="13" height="14" rx="2" stroke="#6366f1" stroke-width="1.5"/><path d="M4.5 6.5a2 2 0 114 0 2 2 0 01-4 0zM2 13c0-2 2.5-3 5.5-3s5.5 1 5.5 3" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:13px; font-weight:700; color:#0d1b27; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">passport_scan.jpg</div>
+                  <div style="font-size:11px; color:#7a8a96; margin-top:1px;">Attached · 1.2 MB</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M1 10v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; background:#f8f7f5; border-radius:12px; border:1px solid rgba(13,27,39,0.06);">
+                <div style="width:32px; height:32px; border-radius:9px; background:#f0faf5; display:grid; place-items:center; flex-shrink:0;">
+                  <svg width="15" height="16" viewBox="0 0 15 16" fill="none"><rect x="1" y="1" width="13" height="14" rx="2" stroke="#22c55e" stroke-width="1.5"/><path d="M4 5h7M4 8h5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/><path d="M4 11.5l1.5 1.5 3-3" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:13px; font-weight:700; color:#0d1b27; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">manifest.json</div>
+                  <div style="font-size:11px; color:#7a8a96; margin-top:1px;">Partner tag + routing · 2 KB</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M1 10v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="how-copy">
+        <div class="how-label">Step 02</div>
+        <h2>Receive a clean, tagged application.</h2>
+        <p>Resume, documents, and partner details arrive in one organized packet. No chasing. No reconstruction.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BRAND CALLOUT -->
+<section class="callout">
+  <div class="shell">
+    <blockquote>Agencies used to spend hours collecting worker details over WhatsApp. <em>Now they send one link instead.</em></blockquote>
+  </div>
+</section>
+
+<!-- FEATURE TILES -->
+<section class="features">
+  <div class="shell">
+    <div class="features-head">
+      <h2>Everything agencies need.</h2>
+      <p>Built around the real operational pain points of Singapore manpower intake.</p>
+    </div>
+    <div class="tiles">
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>Unique partner links</h3>
+        <p>One URL per overseas agency, with your name pre-attached from the first click.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>OCR resume import</h3>
+        <p>Workers scan an old resume to pre-fill the form. No retyping needed.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>Mobile-first</h3>
+        <p>Works on any phone, anywhere — built for workers on the move.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>Instant organized packets</h3>
+        <p>Resume, attachments, and partner tag land together in one folder.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>Zero setup for workers</h3>
+        <p>Share the link immediately. No accounts or installs required.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-dot"></div>
+        <h3>Cloud mirroring</h3>
+        <p>Every submission is saved and mirrored — accessible from anywhere.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="shell">
+    <h2>What are you waiting for?</h2>
+    <p>Send your first worker the link today.</p>
+    <a class="btn-brand" id="footerCta" href="/resume">Try it free</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="shell">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="nav-mark">JR</span>
+        <span class="nav-name">JobReady</span>
+      </div>
       <nav class="footer-links">
-        <a href="/">Home</a>
+        <a href="#how-it-works">How it works</a>
         <a href="/resume">Resume Builder</a>
         <a href="/privacy">Privacy</a>
         <a href="/?reset=1">Reset Draft</a>
       </nav>
+      <span class="footer-meta">© 2026 JobReady · Singapore</span>
     </div>
   </div>
 </footer>
@@ -1289,15 +717,11 @@ function getSavedDraft() {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === "object" ? parsed : null;
-  } catch (_) {
-    return null;
-  }
+  } catch (_) { return null; }
 }
 
 function clearDraftState() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (_) {}
+  try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
 }
 
 function handleResetFlag() {
@@ -1311,41 +735,32 @@ function handleResetFlag() {
 }
 
 const resetNotice = document.getElementById("resetNotice");
-const draftChip = document.getElementById("draftChip");
-const continueCta = document.getElementById("continueCta");
-const footerContinueCta = document.getElementById("footerContinueCta");
-const startCta = document.getElementById("startCta");
-const footerStartCta = document.getElementById("footerStartCta");
-const startNavLink = document.getElementById("startNavLink");
-
-continueCta.style.display = "none";
-footerContinueCta.style.display = "none";
+const draftChip   = document.getElementById("draftChip");
+const heroCta     = document.getElementById("heroCta");
+const footerCta   = document.getElementById("footerCta");
+const navCta      = document.getElementById("navCta");
 
 if (handleResetFlag()) {
   resetNotice.classList.add("show");
 }
 
 const savedDraft = getSavedDraft();
-const hasDraft = Boolean(savedDraft && savedDraft.data && Object.keys(savedDraft.data).length);
-const savedResumeUrlRaw = (savedDraft && typeof savedDraft.resumeUrl === "string" && savedDraft.resumeUrl) ? savedDraft.resumeUrl : "/resume";
-const savedResumeUrl = savedResumeUrlRaw.startsWith("/resume") ? savedResumeUrlRaw : "/resume";
-
-continueCta.href = savedResumeUrl;
-footerContinueCta.href = savedResumeUrl;
+const hasDraft   = Boolean(savedDraft && savedDraft.data && Object.keys(savedDraft.data).length);
+const savedUrl   = (savedDraft && typeof savedDraft.resumeUrl === "string"
+  && savedDraft.resumeUrl.startsWith("/resume"))
+  ? savedDraft.resumeUrl : "/resume";
 
 if (hasDraft) {
   draftChip.classList.add("show");
-  if (savedResumeUrl.includes("partnerLinkCode=")) {
-    draftChip.textContent = "Saved partner draft found. You can continue from the same agency link.";
+  if (savedUrl.includes("partnerLinkCode=")) {
+    draftChip.textContent = "Saved partner draft found — continue from the same agency link.";
   }
-  continueCta.style.display = "inline-flex";
-  footerContinueCta.style.display = "inline-flex";
-  startCta.textContent = "Open Current Application Link";
-  footerStartCta.textContent = "Open Current Application Link";
-  startCta.href = savedResumeUrl;
-  footerStartCta.href = savedResumeUrl;
-  startNavLink.textContent = "Continue Application";
-  startNavLink.href = savedResumeUrl;
+  heroCta.textContent  = "Continue draft";
+  heroCta.href         = savedUrl;
+  navCta.textContent   = "Continue draft";
+  navCta.href          = savedUrl;
+  footerCta.textContent = "Continue draft";
+  footerCta.href        = savedUrl;
 }
 </script>
 </body>
