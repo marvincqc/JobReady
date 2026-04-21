@@ -287,10 +287,17 @@ a { color: inherit; text-decoration: none; }
   let loadingMore = false;
 
   // ── Auth guard ──────────────────────────────────────────────────────────────
+  // If there's a ?code= in the URL, Supabase is mid-PKCE-exchange — don't
+  // redirect to /login on the first null-session fire; wait for SIGNED_IN.
+  const hasPendingOAuth = new URLSearchParams(window.location.search).has("code");
   let booted = false;
   sb.auth.onAuthStateChange(async (event, session) => {
     if (booted) return;
-    if (!session) { window.location.replace("/login"); return; }
+    if (!session) {
+      if (hasPendingOAuth) return; // exchange in progress, wait
+      window.location.replace("/login");
+      return;
+    }
     booted = true;
     token = session.access_token;
     await loadAgencyAndData();
@@ -304,7 +311,7 @@ a { color: inherit; text-decoration: none; }
     booted = true;
     token = session.access_token;
     await loadAgencyAndData();
-  }, 1500);
+  }, 3000);
 
   async function loadAgencyAndData() {
     const meRes = await fetch("/api/agency/me", { headers: auth() });
