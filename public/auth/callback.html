@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signing in — JobReady</title>
+<script src="/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background: #f5f2ec;
+  color: #7a8a96;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 15px;
+}
+</style>
+</head>
+<body>
+<span>Signing in…</span>
+<script>
+(function () {
+  const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+  const next = localStorage.getItem("auth_redirect") || "/dashboard";
+  localStorage.removeItem("auth_redirect");
+
+  let done = false;
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (done) return;
+    if (!session) return;
+    done = true;
+    window.location.replace(next);
+  });
+
+  // Fallback if onAuthStateChange doesn't fire with a session
+  setTimeout(async () => {
+    if (done) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      done = true;
+      window.location.replace(next);
+    } else {
+      window.location.replace("/login");
+    }
+  }, 5000);
+})();
+</script>
+</body>
+</html>

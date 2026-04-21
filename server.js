@@ -297,9 +297,10 @@ function linkErrorPage(title, message) {
 app.get("/privacy", (_req, res) => res.sendFile(path.join(rootDir, "public", "privacy.html")));
 
 // ─── Auth pages ───────────────────────────────────────────────────────────────
-app.get("/register", (_req, res) => res.sendFile(path.join(rootDir, "public", "register.html")));
-app.get("/login",    (_req, res) => res.sendFile(path.join(rootDir, "public", "login.html")));
-app.get("/dashboard",(_req, res) => res.sendFile(path.join(rootDir, "public", "dashboard.html")));
+app.get("/register",       (_req, res) => res.sendFile(path.join(rootDir, "public", "register.html")));
+app.get("/login",          (_req, res) => res.sendFile(path.join(rootDir, "public", "login.html")));
+app.get("/dashboard",      (_req, res) => res.sendFile(path.join(rootDir, "public", "dashboard.html")));
+app.get("/auth/callback",  (_req, res) => res.sendFile(path.join(rootDir, "public", "auth", "callback.html")));
 
 // ─── Supabase public config (safe to expose) ──────────────────────────────────
 app.get("/config.js", (_req, res) => {

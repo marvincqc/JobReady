@@ -139,9 +139,10 @@ main { flex: 1; display: flex; align-items: center; padding: 48px 24px; }
   });
 
   document.getElementById("googleBtn").addEventListener("click", async () => {
+    localStorage.setItem("auth_redirect", "/dashboard");
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin + "/dashboard" },
+      options: { redirectTo: window.location.origin + "/auth/callback" },
     });
     if (error) showMsg(error.message, "error");
   });

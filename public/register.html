@@ -186,9 +186,10 @@ main { flex: 1; display: flex; align-items: center; padding: 48px 0; }
 
   // ── Google OAuth ────────────────────────────────────────────────────────────
   document.getElementById("googleBtn").addEventListener("click", async () => {
+    localStorage.setItem("auth_redirect", "/register?step=profile");
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin + "/register?step=profile" },
+      options: { redirectTo: window.location.origin + "/auth/callback" },
     });
     if (error) showMsg("emailMsg", error.message, "error");
   });
