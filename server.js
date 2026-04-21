@@ -18,9 +18,9 @@ const packageInfo = require("./package.json");
 let _supabase = null;
 function getSupabase() {
   if (!_supabase) {
-    const url = process.env.SUPABASE_URL;
+    const url = process.env.SUPABASE_URL || "https://qpnkmqczvlmrxofqgzdu.supabase.co";
     const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
-    if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_KEY env vars are required.");
+    if (!key) throw new Error("SUPABASE_SERVICE_KEY env var is required.");
     _supabase = createClient(url, key);
   }
   return _supabase;
