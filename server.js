@@ -305,7 +305,7 @@ app.get("/auth/callback",  (_req, res) => res.sendFile(path.join(rootDir, "publi
 // ─── Supabase public config (safe to expose) ──────────────────────────────────
 app.get("/config.js", (_req, res) => {
   res.type("application/javascript").send(
-    `window.SUPABASE_URL = ${JSON.stringify(process.env.SUPABASE_URL || "")};\n` +
+    `window.SUPABASE_URL = ${JSON.stringify(process.env.SUPABASE_URL || "https://qpnkmqczvlmrxofqgzdu.supabase.co")};\n` +
     `window.SUPABASE_ANON_KEY = ${JSON.stringify(process.env.SUPABASE_ANON_KEY || "")};\n`
   );
 });
