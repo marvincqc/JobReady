@@ -151,6 +151,19 @@ body {
   box-shadow: 0 0 0 3px rgba(200, 94, 56, 0.10);
 }
 .start-over-btn svg { flex-shrink: 0; }
+.exit-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.exit-btn:hover { color: var(--ink); }
+
 .import-btn {
   background: var(--accent);
   border: none;
@@ -166,6 +179,73 @@ body {
 }
 .import-btn:hover { background: var(--accent-dark); }
 .import-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Exit modal ── */
+.exit-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(13, 27, 39, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.exit-overlay.active { display: flex; }
+.exit-modal {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: min(420px, 100%);
+  box-shadow: 0 24px 60px rgba(13, 27, 39, 0.18);
+  text-align: center;
+}
+.exit-modal h2 {
+  font-family: "Fraunces", serif;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.exit-modal p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.exit-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.exit-modal-actions button {
+  width: 100%; height: 48px; border-radius: 999px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer; border: none; transition: background 0.15s, color 0.15s;
+}
+.btn-exit-save    { background: var(--ink); color: #fff; }
+.btn-exit-save:hover { background: #1c3447; }
+.btn-exit-discard { background: #fff1eb; color: var(--accent); border: 1.5px solid rgba(200,94,56,0.25) !important; }
+.btn-exit-discard:hover { background: rgba(200,94,56,0.1); }
+.btn-exit-back    { background: none; color: var(--muted); font-weight: 600 !important; }
+.btn-exit-back:hover { color: var(--ink); }
+
+/* ── Exit screen ── */
+.exit-screen {
+  text-align: center;
+  padding: 20px 0 40px;
+}
+.exit-screen-icon {
+  font-size: 48px; margin-bottom: 20px;
+}
+.exit-screen h2 {
+  font-family: "Fraunces", serif;
+  font-size: 28px; letter-spacing: -0.03em;
+  margin-bottom: 12px; color: var(--ink);
+}
+.exit-screen p {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.7; max-width: 380px; margin: 0 auto;
+}
 
 /* ── Progress ── */
 .progress-wrap {
@@ -939,6 +1019,7 @@ select.field {
         <option value="bn">🇧🇩 বাংলা</option>
       </select>
       <button class="import-btn" id="importBtn" type="button" onclick="openOcrImport()">Import resume</button>
+      <button class="exit-btn" id="exitBtn" type="button" onclick="openExitModal()">Exit</button>
     </div>
   </div>
 </div>
@@ -981,6 +1062,18 @@ select.field {
 </div>
 
 <input type="file" id="ocrFile" accept="image/*" hidden>
+
+<div class="exit-overlay" id="exitOverlay">
+  <div class="exit-modal">
+    <h2>Leave the form?</h2>
+    <p>Your answers can be saved so you can come back using the same link from your agency.</p>
+    <div class="exit-modal-actions">
+      <button class="btn-exit-save"    onclick="exitAndSave()">Continue later</button>
+      <button class="btn-exit-discard" onclick="exitAndDiscard()">Discard and leave</button>
+      <button class="btn-exit-back"    onclick="closeExitModal()">Go back</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── Translations ──────────────────────────────────────────────────────────────
@@ -2385,6 +2478,45 @@ document.getElementById("ocrFile").addEventListener("change", handleOcrFile);
 document.getElementById("importBtn").title = "Upload a resume image to autofill common fields";
 renderContextBanner();
 render();
+
+function openExitModal() {
+  document.getElementById("exitOverlay").classList.add("active");
+}
+
+function closeExitModal() {
+  document.getElementById("exitOverlay").classList.remove("active");
+}
+
+function showExitScreen(saved) {
+  document.getElementById("exitOverlay").classList.remove("active");
+  document.getElementById("progressWrap").closest("div").style.display = "none";
+  document.getElementById("draftNotice")?.remove();
+  const wizard = document.getElementById("wizard");
+  wizard.innerHTML = "";
+  const card = document.createElement("div");
+  card.className = "step-card active";
+  card.innerHTML = `
+    <div class="exit-screen">
+      <div class="exit-screen-icon">${saved ? "🔖" : "👋"}</div>
+      <h2>${saved ? "See you later" : "All done"}</h2>
+      <p>${saved
+        ? "Your progress has been saved. Use the same link from your agency to continue your application."
+        : "Your form has been cleared. Use the same link from your agency if you'd like to start again."
+      }</p>
+    </div>
+  `;
+  wizard.appendChild(card);
+}
+
+function exitAndSave() {
+  showExitScreen(true);
+}
+
+function exitAndDiscard() {
+  clearDraft();
+  attachments = [];
+  showExitScreen(false);
+}
 </script>
 </body>
 </html>
