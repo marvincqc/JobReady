@@ -930,10 +930,6 @@ select.field {
       <div class="logo-name">JobReady</div>
     </a>
     <div class="header-actions">
-      <a class="page-link" href="/">Home</a>
-      <a class="page-link" href="/privacy">Privacy</a>
-      <a class="page-link reset-link" href="/?reset=1" onclick="return resetToHome(event)">Reset</a>
-      <button class="import-btn" id="importBtn" type="button" onclick="openOcrImport()">Import resume</button>
       <select class="lang-select" id="langSel" onchange="changeLang(this.value)">
         <option value="en">🇬🇧 English</option>
         <option value="zh">🇨🇳 中文</option>
@@ -942,6 +938,7 @@ select.field {
         <option value="hi">🇮🇳 हिन्दी</option>
         <option value="bn">🇧🇩 বাংলা</option>
       </select>
+      <button class="import-btn" id="importBtn" type="button" onclick="openOcrImport()">Import resume</button>
     </div>
   </div>
 </div>
