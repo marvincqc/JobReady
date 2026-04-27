@@ -324,7 +324,10 @@ a { color: inherit; text-decoration: none; }
   async function loadAgencyAndData() {
     try {
       const meRes = await fetch("/api/agency/me", { headers: auth() });
-      if (meRes.status === 401) return window.location.replace("/login");
+      if (meRes.status === 401) {
+        await sb.auth.signOut({ scope: "local" }).catch(() => {});
+        return window.location.replace("/login");
+      }
       const meJson = await meRes.json();
 
       if (!meJson.agency) {

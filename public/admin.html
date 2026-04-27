@@ -192,8 +192,10 @@ tr:hover td { background: #fafaf9; }
   }
 
   // ── Auth ────────────────────────────────────────────────────────────────────
+  let booted = false;
+
   sb.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_OUT") { window.location.replace("/login"); return; }
+    if (event === "SIGNED_OUT" && booted) { window.location.replace("/login"); return; }
     if (session) token = session.access_token;
   });
 
@@ -203,13 +205,18 @@ tr:hover td { background: #fafaf9; }
 
     // Verify admin via a stats probe
     const probe = await fetch("/api/admin/stats", { headers: auth() });
-    if (probe.status === 401) return window.location.replace("/login?next=/admin");
+    if (probe.status === 401) {
+      // Stale local session — clear it so login page doesn't loop back
+      await sb.auth.signOut({ scope: "local" }).catch(() => {});
+      return window.location.replace("/login?next=/admin");
+    }
     if (probe.status === 403) {
       document.getElementById("loadingMsg").style.display = "none";
       document.getElementById("blockedMsg").style.display = "flex";
       return;
     }
 
+    booted = true;
     document.getElementById("loadingMsg").style.display = "none";
     document.getElementById("app").style.display = "";
     const stats = await probe.json();
