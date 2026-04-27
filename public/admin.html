@@ -82,6 +82,7 @@ tr:hover td { background: #fafaf9; }
 </head>
 <body>
 
+<div id="loadingMsg" class="blocked"><div class="spinner" style="margin:0 0 8px;"></div><span>Loading…</span></div>
 <div id="blockedMsg" class="blocked" style="display:none;">
   <span style="font-size:32px;">🚫</span>
   <strong style="color:var(--ink);">Access denied</strong>
@@ -157,17 +158,19 @@ tr:hover td { background: #fafaf9; }
   });
 
   sb.auth.getSession().then(async ({ data: { session } }) => {
-    if (!session) return window.location.replace("/login");
+    if (!session) return window.location.replace("/login?next=/admin");
     token = session.access_token;
 
     // Verify admin via a stats probe
     const probe = await fetch("/api/admin/stats", { headers: auth() });
-    if (probe.status === 401) return window.location.replace("/login");
+    if (probe.status === 401) return window.location.replace("/login?next=/admin");
     if (probe.status === 403) {
+      document.getElementById("loadingMsg").style.display = "none";
       document.getElementById("blockedMsg").style.display = "flex";
       return;
     }
 
+    document.getElementById("loadingMsg").style.display = "none";
     document.getElementById("app").style.display = "";
     const stats = await probe.json();
     document.getElementById("statAgencies").textContent = stats.agencies;

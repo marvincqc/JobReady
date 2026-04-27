@@ -133,13 +133,15 @@ main { flex: 1; display: flex; align-items: center; padding: 48px 24px; }
 (function () {
   const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
+  const next = new URLSearchParams(window.location.search).get("next") || "/dashboard";
+
   // Redirect if already signed in
   sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.replace("/dashboard");
+    if (session) window.location.replace(next);
   });
 
   document.getElementById("googleBtn").addEventListener("click", async () => {
-    localStorage.setItem("auth_redirect", "/dashboard");
+    localStorage.setItem("auth_redirect", next);
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin + "/auth/callback" },
@@ -161,7 +163,7 @@ main { flex: 1; display: flex; align-items: center; padding: 48px 24px; }
       return showMsg(error.message, "error");
     }
 
-    window.location.replace("/dashboard");
+    window.location.replace(next);
   });
 
   function showMsg(text, type) {
